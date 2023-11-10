@@ -19,7 +19,7 @@ import Menu from './component/menu.vue';
   height: 100%;
 }
 .menu-container {
-  width: 190px;
+  width: $menuWidth;
   height: 100%;
   padding-top: 14px;
   background-color: #f8f8f8;

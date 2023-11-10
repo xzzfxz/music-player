@@ -16,6 +16,13 @@
   opacity: 0.8;
 }
 
+.image {
+  width: 100%;
+  border-radius: inherit;
+  display: inherit;
+  object-fit: contain;
+}
+
 .el-table {
   .el-table__header,
   .el-table__body {
