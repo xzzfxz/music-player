@@ -1,11 +1,15 @@
 <template>
   <div class="index-container flex">
-    <div class="menu-container no-shrink"></div>
+    <div class="menu-container no-shrink">
+      <Menu />
+    </div>
     <div class="main-container"></div>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import Menu from './component/menu.vue';
+</script>
 
 <style lang="scss" scoped>
 .index-container {

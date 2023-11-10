@@ -12,5 +12,6 @@ import { RouterView } from 'vue-router';
 .app-all-container {
   width: 100vw;
   height: 100vh;
+  user-select: none;
 }
 </style>

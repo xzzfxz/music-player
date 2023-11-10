@@ -6,7 +6,7 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "tauri-study",
+    "productName": "music-player",
     "version": "0.0.1"
   },
   "tauri": {
