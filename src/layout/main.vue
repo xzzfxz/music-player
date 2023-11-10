@@ -25,6 +25,7 @@ import FootBar from '@/components/footBar/index.vue';
   flex-direction: column;
 }
 .main-router-container {
+  height: 0;
   flex-grow: 1;
 }
 </style>

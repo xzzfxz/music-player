@@ -17,7 +17,11 @@ import Menu from './component/menu.vue';
 }
 .menu-container {
   width: 190px;
+  height: 100%;
+  padding-top: 14px;
   background-color: #f8f8f8;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 .main-container {
   background-color: #ffffff;

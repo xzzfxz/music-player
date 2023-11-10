@@ -10,6 +10,7 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.1.0",
     "@tauri-apps/api": "^2.0.0-alpha.11",
     "@tauri-apps/plugin-shell": "^2.0.0-alpha.3",
     "@types/node": "^20.9.0",
@@ -19,8 +20,13 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.0.0-alpha.17",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
+    "@typescript-eslint/parser": "^6.10.0",
     "@vitejs/plugin-vue": "^4.2.3",
     "autoprefixer": "^10.4.16",
+    "eslint": "^8.53.0",
+    "eslint-plugin-vue": "^9.18.1",
+    "postcss": "^8.4.31",
     "sass": "^1.69.5",
     "typescript": "^5.0.2",
     "unplugin-auto-import": "^0.16.7",

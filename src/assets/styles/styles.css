@@ -91,6 +91,10 @@ button {
   outline: none;
 }
 
+div {
+  box-sizing: border-box;
+}
+
 #greet-input {
   margin-right: 5px;
 }
