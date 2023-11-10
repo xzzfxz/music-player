@@ -15,3 +15,16 @@
 .click-active:active {
   opacity: 0.8;
 }
+
+.el-table {
+  .el-table__header,
+  .el-table__body {
+    .el-table__cell {
+      padding: 8px 0;
+      .cell {
+        padding: 0;
+        padding-right: 10px;
+      }
+    }
+  }
+}

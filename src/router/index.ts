@@ -9,13 +9,27 @@ const routes: RouteRecordRaw[] = [
     name: 'mainLayout',
     component: MainLayout,
     redirect: '/',
-    children: [{ path: '/', name: 'index', component: Index }],
-  },
+    children: [
+      {
+        path: '/',
+        name: 'index',
+        component: Index,
+        redirect: 'localMusic',
+        children: [
+          {
+            path: 'localMusic',
+            name: 'localMusic',
+            component: () => import('@/views/local/index.vue')
+          }
+        ]
+      }
+    ]
+  }
 ];
 
 const router = createRouter({
   history: createWebHistory(),
-  routes,
+  routes
 });
 
 export default router;

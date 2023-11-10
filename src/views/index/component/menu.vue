@@ -49,7 +49,7 @@ import {
 import { shallowReactive } from 'vue';
 
 const state = shallowReactive({
-  selectedItem: 'recommend',
+  selectedItem: 'local',
   onlineMenu: {
     title: '在线音乐',
     showFeedback: true,

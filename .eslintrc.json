@@ -28,6 +28,7 @@
         "multiline": "always"
       }
     ],
+    "vue/valid-template-root": 0,
     "vue/singleline-html-element-content-newline": 0, // 关闭单行元素必须换行符
     "vue/multiline-html-element-content-newline": 0 // 关闭多行元素必须换行符
   }

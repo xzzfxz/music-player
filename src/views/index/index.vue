@@ -3,11 +3,14 @@
     <div class="menu-container no-shrink">
       <Menu />
     </div>
-    <div class="main-container"></div>
+    <div class="main-container">
+      <RouterView />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { RouterView } from 'vue-router';
 import Menu from './component/menu.vue';
 </script>
 
@@ -24,7 +27,10 @@ import Menu from './component/menu.vue';
   overflow-y: auto;
 }
 .main-container {
+  height: 100%;
+  width: 0;
   background-color: #ffffff;
   flex-grow: 1;
+  overflow: auto;
 }
 </style>
