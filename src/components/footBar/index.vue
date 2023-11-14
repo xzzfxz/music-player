@@ -1,5 +1,5 @@
 <template>
-  <div class="foot-bar-container">
+  <div class="foot-bar-container flex">
     <div class="control-container flex">
       <div class="to-up-down click-active">
         <img class="image" :src="toUpImg" alt="" />
@@ -12,6 +12,27 @@
         <img class="image" :src="toDownImg" alt="" />
       </div>
     </div>
+    <div class="avatar-container">
+      <img :src="state.avatarUrl" alt="" class="image" />
+    </div>
+    <div class="play-info-container">
+      <div class="music-info-container flex">
+        <div class="left-container flex">
+          <div class="song-quality no-shrink">
+            <SoundQuality />
+          </div>
+          <div class="song-info">
+            <TextScroll :text="state.songInfo" />
+          </div>
+        </div>
+        <div class="right-container flex no-shrink">00:18 / 04:02</div>
+      </div>
+      <div class="play-progress-container">
+        <div class="cache-container">
+          <el-progress :percentage="50" color="#3061A4" />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -21,9 +42,13 @@ import toDownImg from '@/assets/imgs/toDown.png';
 import toPlayImg from '@/assets/imgs/toPlay.png';
 import toPauseImg from '@/assets/imgs/toPause.png';
 import { reactive } from 'vue';
+import SoundQuality from './component/soundQuality.vue';
+import TextScroll from '@/components/TextScroll/index.vue';
 
 const state = reactive({
-  playing: false
+  playing: false,
+  avatarUrl: '',
+  songInfo: '风吹沙 - 蝶恋花，古道旁，我欲语泪先下，山河大好'
 });
 
 // 播放与暂停
@@ -35,6 +60,7 @@ const handlePlayPause = () => {
 <style lang="scss" scoped>
 .foot-bar-container {
   height: 60px;
+  align-items: center;
   background-color: $primaryColor;
 }
 .control-container {
@@ -51,6 +77,46 @@ const handlePlayPause = () => {
     width: 42px;
     height: 42px;
     cursor: pointer;
+  }
+}
+.avatar-container {
+  width: 44px;
+  height: 44px;
+  border-radius: 4px;
+  overflow: hidden;
+  background-image: url('@/assets/imgs/ktv.png');
+  background-size: 80%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #458ceb;
+}
+.play-info-container {
+  width: 368px;
+  margin-left: 14px;
+  border: 1px solid red;
+  .music-info-container {
+    align-items: center;
+    width: 100%;
+    .left-container {
+      width: 0;
+      flex-grow: 1;
+      align-items: center;
+      .song-info {
+        width: 0;
+        margin-left: 8px;
+        flex-grow: 1;
+        white-space: nowrap;
+        color: #fff;
+        font-size: 12px;
+        overflow: hidden;
+      }
+    }
+    .right-container {
+      width: 98px;
+      justify-content: flex-end;
+      font-size: 12px;
+      color: #fff;
+    }
   }
 }
 </style>
