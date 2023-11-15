@@ -5,7 +5,7 @@
 export interface MenuChild {
   id: string;
   name: string;
-  iconCom: any;
+  icon?: string;
   color?: string;
 }
 

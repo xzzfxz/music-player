@@ -8,7 +8,7 @@
     >
       <div class="down-container flex-center">
         无损
-        <el-icon><ArrowUp /></el-icon>
+        <i class="ri-arrow-up-s-line icon"></i>
       </div>
       <template #dropdown>
         <el-dropdown-menu>
@@ -51,7 +51,6 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowUp } from '@element-plus/icons-vue';
 import { reactive } from 'vue';
 
 const state = reactive({
@@ -74,6 +73,9 @@ const state = reactive({
   line-height: 12px;
   outline: none;
   cursor: pointer;
+  .icon {
+    font-size: 14px;
+  }
 }
 </style>
 <style lang="scss">

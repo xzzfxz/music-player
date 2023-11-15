@@ -20,7 +20,7 @@ import Menu from './component/menu.vue';
 }
 .menu-container {
   width: $menuWidth;
-  height: 100%;
+  height: calc(100% - $footBarHeight);
   padding-top: 14px;
   background-color: #f8f8f8;
   overflow-x: hidden;

@@ -28,4 +28,12 @@ import FootBar from '@/components/footBar/index.vue';
   height: 0;
   flex-grow: 1;
 }
+.footer-container {
+  width: 100%;
+  height: $footBarHeight;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 9999;
+}
 </style>

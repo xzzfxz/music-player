@@ -6,11 +6,11 @@
   <div class="deal-container flex">
     <div class="left-container flex">
       <el-button type="primary" class="deal-btn">
-        <el-icon class="deal-icon"><CaretRight /></el-icon>
+        <i class="ri-play-line deal-icon"></i>
         播放全部
       </el-button>
       <el-button class="deal-btn">
-        <el-icon class="deal-icon plus"><Plus /></el-icon>
+        <i class="ri-add-line deal-icon"></i>
         添加歌曲
       </el-button>
     </div>
@@ -21,8 +21,9 @@
           placeholder="搜索"
           class="filter-input"
           size="small"
-          :prefix-icon="Search"
-        />
+        >
+          <template #prefix><i class="ri-search-line"></i></template>
+        </el-input>
       </div>
     </div>
   </div>
@@ -32,7 +33,6 @@
 </template>
 
 <script setup lang="ts">
-import { CaretRight, Plus, Search } from '@element-plus/icons-vue';
 import { reactive } from 'vue';
 import SongTable from './components/songTable.vue';
 
@@ -68,9 +68,6 @@ const state = reactive({
     width: 100px;
     .deal-icon {
       font-size: 20px;
-      &.plus {
-        font-size: 14px;
-      }
     }
   }
   .filter-input {

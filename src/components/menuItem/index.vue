@@ -7,7 +7,7 @@
           v-if="props.data.showFeedback"
           class="menu-feedback menu-click-item click-active flex"
         >
-          <el-icon class="menu-icon"><ChatLineSquare /></el-icon>
+          <i class="ri-message-line menu-icon"></i>
           <div class="menu-text">反馈</div>
         </div>
       </div>
@@ -21,16 +21,10 @@
         @click="handleChangeMenu(item)"
       >
         <div class="menu-child-icon">
-          <el-icon
-            class="menu-child-icon flex"
-            v-if="item.color"
-            :style="{ color: item.color }"
-          >
-            <component :is="item.iconCom"></component>
-          </el-icon>
-          <el-icon class="menu-child-icon flex" v-else>
-            <component :is="item.iconCom"></component>
-          </el-icon>
+          <i
+            :class="item.icon || 'ri-file-copy-2-line'"
+            :style="{ color: item.color || 'inherit' }"
+          ></i>
         </div>
         <div class="menu-child-text">{{ item.name }}</div>
       </div>
@@ -40,7 +34,6 @@
 
 <script setup lang="ts">
 import { MenuCategory, MenuChild } from '@/interface';
-import { ChatLineSquare } from '@element-plus/icons-vue';
 import { PropType, computed } from 'vue';
 
 const emit = defineEmits(['change']);
