@@ -1,64 +1,84 @@
 <template>
   <div class="foot-bar-container flex">
-    <div class="control-container flex">
-      <div class="to-up-down click-active">
-        <img class="image" :src="toUpImg" alt="" />
+    <div class="foot-bar-left flex">
+      <div class="control-container flex">
+        <div class="to-up-down click-active">
+          <img class="image" :src="toUpImg" alt="" />
+        </div>
+        <div class="play-pause click-active" @click="handlePlayPause">
+          <img v-if="state.playing" class="image" :src="toPauseImg" alt="" />
+          <img v-else class="image" :src="toPlayImg" alt="" />
+        </div>
+        <div class="to-up-down click-active">
+          <img class="image" :src="toDownImg" alt="" />
+        </div>
       </div>
-      <div class="play-pause click-active" @click="handlePlayPause">
-        <img v-if="state.playing" class="image" :src="toPauseImg" alt="" />
-        <img v-else class="image" :src="toPlayImg" alt="" />
+      <div class="avatar-container">
+        <img :src="state.avatarUrl" alt="" class="image" />
       </div>
-      <div class="to-up-down click-active">
-        <img class="image" :src="toDownImg" alt="" />
-      </div>
-    </div>
-    <div class="avatar-container">
-      <img :src="state.avatarUrl" alt="" class="image" />
-    </div>
-    <div class="play-info-container">
-      <div class="music-info-container flex">
-        <div class="left-container flex">
-          <div class="song-quality no-shrink">
-            <SoundQuality />
+      <div class="play-info-container">
+        <div class="music-info-container flex">
+          <div class="left-container flex">
+            <div class="song-quality no-shrink">
+              <SoundQuality />
+            </div>
+            <div class="song-info">
+              <TextScroll :text="state.songInfo" />
+            </div>
           </div>
-          <div class="song-info">
-            <TextScroll :text="state.songInfo" />
+          <div class="right-container flex no-shrink">00:18 / 04:02</div>
+        </div>
+        <div class="play-progress-container">
+          <div class="cache-container">
+            <el-progress
+              color="#3061A4"
+              :percentage="state.cacheProgress"
+              :show-text="false"
+              :stroke-width="3"
+            />
+          </div>
+          <div class="cache-container">
+            <el-slider
+              v-model="state.playProgress"
+              :min="state.playMin"
+              :max="state.playMax"
+              :show-tooltip="false"
+              @change="handlePlayProgressChange"
+            />
           </div>
         </div>
-        <div class="right-container flex no-shrink">00:18 / 04:02</div>
-      </div>
-      <div class="play-progress-container">
-        <div class="cache-container">
-          <el-progress
-            color="#3061A4"
-            :percentage="state.cacheProgress"
-            :show-text="false"
-            :stroke-width="3"
-          />
-        </div>
-        <div class="cache-container">
-          <el-slider
-            v-model="state.playProgress"
-            :min="state.playMin"
-            :max="state.playMax"
-            :show-tooltip="false"
-            @change="handlePlayProgressChange"
-          />
-        </div>
       </div>
     </div>
-    <div
-      class="icon-container like-container"
-      :class="{ liked: state.hasLiked }"
-    >
-      <i v-if="state.hasLiked" class="ri-heart-3-fill"></i>
-      <i v-else class="ri-heart-3-line"></i>
-    </div>
-    <div class="icon-container download-container">
-      <i class="ri-download-2-line"></i>
-    </div>
-    <div class="icon-container">
-      <SoundDeal />
+    <div class="foot-bar-right flex">
+      <div
+        class="icon-container like-container"
+        :class="{ liked: state.hasLiked }"
+      >
+        <i v-if="state.hasLiked" class="ri-heart-3-fill"></i>
+        <i v-else class="ri-heart-3-line"></i>
+      </div>
+      <div class="icon-container click-active download-container">
+        <i class="ri-download-2-line"></i>
+      </div>
+      <div class="icon-container click-active">
+        <i class="ri-apps-line"></i>
+      </div>
+      <div class="icon-container" title="音效">
+        <i class="ri-equalizer-line"></i>
+      </div>
+      <div class="icon-container click-active">
+        <span>词</span>
+      </div>
+      <div class="icon-container" title="顺序播放">
+        <i class="ri-order-play-line"></i>
+      </div>
+      <div class="icon-container">
+        <i class="ri-volume-up-line"></i>
+      </div>
+      <div class="icon-container">
+        <i class="ri-play-list-2-line"></i>
+        <span class="play-num">876</span>
+      </div>
     </div>
   </div>
 </template>
@@ -71,7 +91,6 @@ import toPauseImg from '@/assets/imgs/toPause.png';
 import { reactive } from 'vue';
 import SoundQuality from './component/soundQuality.vue';
 import TextScroll from '@/components/TextScroll/index.vue';
-import SoundDeal from './component/soundDeal.vue';
 
 const state = reactive({
   playing: false,
@@ -99,8 +118,12 @@ const handlePlayProgressChange = (val: number) => {
 .foot-bar-container {
   height: 100%;
   align-items: center;
+  justify-content: space-between;
   background-color: rgba(28, 126, 255, 0.8);
   backdrop-filter: blur(2px);
+}
+.foot-bar-right {
+  padding-right: 20px;
 }
 .control-container {
   width: $menuWidth;
@@ -199,11 +222,15 @@ const handlePlayProgressChange = (val: number) => {
   margin-left: 18px;
   color: #fff;
   font-size: 19px;
+  cursor: pointer;
 }
 .like-container {
   margin-left: 25px;
   &.liked {
     color: #e7442e;
   }
+}
+.play-num {
+  font-size: 16px;
 }
 </style>
