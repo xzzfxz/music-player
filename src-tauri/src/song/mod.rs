@@ -6,11 +6,11 @@ use serde::{Deserialize, Serialize};
  */
 #[derive(Deserialize, Serialize, Debug)]
 pub struct SongInfo {
-    id: String,
+    id: Option<String>,
     singer: String,
     name: String,
     path: String,
-    time: String,
-    mv: bool,
-    album: String,
+    time: Option<String>,
+    mv: Option<bool>,
+    album: Option<String>,
 }
