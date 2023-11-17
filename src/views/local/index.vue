@@ -9,7 +9,7 @@
         <i class="ri-play-line deal-icon"></i>
         播放全部
       </el-button>
-      <el-button class="deal-btn">
+      <el-button class="deal-btn" @click="handleShowAddDialog">
         <i class="ri-add-line deal-icon"></i>
         添加歌曲
       </el-button>
@@ -35,10 +35,47 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
 import SongTable from './components/songTable.vue';
+import { open } from '@tauri-apps/plugin-dialog';
+import { MUSIC_EXT } from '@/const';
+import { ElMessage } from 'element-plus';
+import { getSingerAndName } from '@/utils';
+import { SongInfo } from '@/interface';
+import { invoke } from '@tauri-apps/api/primitives';
 
 const state = reactive({
   filterValue: ''
 });
+
+// 显示添加音乐弹窗
+const handleShowAddDialog = async () => {
+  const selected = await open({
+    title: '选择音乐',
+    multiple: true,
+    recursive: false,
+    filters: [
+      {
+        name: 'music',
+        extensions: MUSIC_EXT
+      }
+    ]
+  });
+  console.log(selected);
+  if (!selected?.length) {
+    // 没有选中文件
+    ElMessage({
+      message: '没有选中文件',
+      type: 'warning'
+    });
+    return;
+  }
+  const songList: SongInfo[] = [];
+  selected.forEach((song: any) => {
+    const res = getSingerAndName(song.name);
+    songList.push({ singer: res.singer, name: res.songName, path: song.path });
+  });
+  console.log(songList);
+  await invoke('save_local_song_info', { test: [1, 2, 3] });
+};
 </script>
 
 <style lang="scss" scoped>

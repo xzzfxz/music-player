@@ -18,3 +18,17 @@ export interface MenuCategory {
   showFeedback?: boolean;
   menuList: MenuChild[];
 }
+
+/**
+ * @description: 歌曲信息
+ * @return {*}
+ */
+export interface SongInfo {
+  id?: string;
+  singer: string;
+  name: string;
+  path: string;
+  time?: string;
+  mv?: boolean;
+  album?: string;
+}
