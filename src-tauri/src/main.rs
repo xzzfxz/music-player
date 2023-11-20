@@ -2,6 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod api;
+mod dialog;
 mod song;
 use crate::api::outer_apis::{open_song_dialog, save_local_song_info};
 
