@@ -13,4 +13,5 @@ pub struct SongInfo {
     time: Option<String>,
     mv: Option<bool>,
     album: Option<String>,
+    online: Option<bool>,
 }

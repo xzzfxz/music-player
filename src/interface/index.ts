@@ -31,4 +31,5 @@ export interface SongInfo {
   time?: string;
   mv?: boolean;
   album?: string;
+  online?: bool;
 }

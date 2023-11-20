@@ -10,6 +10,15 @@
     "version": "0.0.1"
   },
   "tauri": {
+    "allowlist": {
+      "all": false,
+      "window": {
+        "all": true
+      },
+      "dialog": {
+        "all": true
+      }
+    },
     "bundle": {
       "active": true,
       "targets": "all",

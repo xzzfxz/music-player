@@ -35,12 +35,11 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
 import SongTable from './components/songTable.vue';
-import { open } from '@tauri-apps/plugin-dialog';
 import { MUSIC_EXT } from '@/const';
 import { ElMessage } from 'element-plus';
 import { getSingerAndName } from '@/utils';
 import { SongInfo } from '@/interface';
-import { invoke } from '@tauri-apps/api/primitives';
+import { invoke } from '@tauri-apps/api';
 
 const state = reactive({
   filterValue: ''
@@ -48,33 +47,41 @@ const state = reactive({
 
 // 显示添加音乐弹窗
 const handleShowAddDialog = async () => {
-  const selected = await open({
-    title: '选择音乐',
-    multiple: true,
-    recursive: false,
-    filters: [
-      {
-        name: 'music',
-        extensions: MUSIC_EXT
-      }
-    ]
+  await invoke('open_song_dialog', {
+    fileType: 'music',
+    extensions: MUSIC_EXT
   });
-  console.log(selected);
-  if (!selected?.length) {
-    // 没有选中文件
-    ElMessage({
-      message: '没有选中文件',
-      type: 'warning'
-    });
-    return;
-  }
-  const songList: SongInfo[] = [];
-  selected.forEach((song: any) => {
-    const res = getSingerAndName(song.name);
-    songList.push({ singer: res.singer, name: res.songName, path: song.path });
-  });
-  console.log(songList);
-  await invoke('save_local_song_info', { test: [1, 2, 3] });
+  // const selected = await open({
+  //   title: '选择音乐',
+  //   multiple: true,
+  //   recursive: false,
+  //   filters: [
+  //     {
+  //       name: 'music',
+  //       extensions: MUSIC_EXT
+  //     }
+  //   ]
+  // });
+  // if (!selected?.length) {
+  //   // 没有选中文件
+  //   ElMessage({
+  //     message: '没有选中文件',
+  //     type: 'warning'
+  //   });
+  //   return;
+  // }
+  // const songList: SongInfo[] = [];
+  // selected.forEach((song: any) => {
+  //   const res = getSingerAndName(song.name);
+  //   songList.push({
+  //     singer: res.singer,
+  //     name: res.songName,
+  //     path: song.path,
+  //     online: false
+  //   });
+  // });
+  // console.log(songList);
+  // await invoke('save_local_song_info', { list: songList });
 };
 </script>
 

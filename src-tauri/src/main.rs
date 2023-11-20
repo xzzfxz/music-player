@@ -3,16 +3,16 @@
 
 mod api;
 mod song;
-use crate::api::outer_apis::save_local_song_info;
+use crate::api::outer_apis::{open_song_dialog, save_local_song_info};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 
 fn main() {
     tauri::Builder::default()
-        .plugin(tauri_plugin_window::init())
-        .plugin(tauri_plugin_shell::init())
-        .plugin(tauri_plugin_dialog::init())
-        .invoke_handler(tauri::generate_handler![save_local_song_info])
+        .invoke_handler(tauri::generate_handler![
+            save_local_song_info,
+            open_song_dialog
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
