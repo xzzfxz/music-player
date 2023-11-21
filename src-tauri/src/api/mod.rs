@@ -7,11 +7,9 @@ pub mod outer_apis {
     use super::SongInfo;
 
     #[tauri::command]
-    pub fn open_song_dialog(file_type: String, extensions: Vec<&str>) -> String {
+    pub fn open_song_dialog(file_type: String, extensions: Vec<&str>) {
         println!("打开文件对话框 {}, {:?}", file_type, extensions);
         dialog::open_local_music(file_type, extensions);
-        println!("我才是最后一句");
-        "test".into()
     }
 
     #[tauri::command]

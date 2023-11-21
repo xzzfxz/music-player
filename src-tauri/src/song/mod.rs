@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 pub struct SongInfo {
     id: Option<String>,
     singer: String,
+    ext: String,
     name: String,
     path: String,
     time: Option<String>,

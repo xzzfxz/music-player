@@ -36,9 +36,9 @@
 import { reactive } from 'vue';
 import SongTable from './components/songTable.vue';
 import { MUSIC_EXT } from '@/const';
-import { ElMessage } from 'element-plus';
-import { getSingerAndName } from '@/utils';
-import { SongInfo } from '@/interface';
+// import { ElMessage } from 'element-plus';
+// import { getSingerAndName } from '@/utils';
+// import { SongInfo } from '@/interface';
 import { invoke } from '@tauri-apps/api';
 
 const state = reactive({
