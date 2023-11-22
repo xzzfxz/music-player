@@ -1,12 +1,21 @@
 use std::path::PathBuf;
 
-fn get_song_info(song_path: PathBuf) {
+/**
+ * @description: 获取歌名，歌手和后缀名
+ * @param {PathBuf} song_path
+ * @param {*} String
+ * @param {*} String
+ * @return {*}
+ */
+fn get_song_info(song_path: PathBuf) -> Result<(String, String, String), Option<String>> {
     if !song_path.exists() {
         println!("文件不存在: {:?}", song_path);
-        return;
+        return Err(None);
     }
-    let ext = song_path.extension();
+    // 后缀名
+    let ext = song_path.extension().unwrap().to_string_lossy().to_string();
     let song_singer = song_path.file_stem();
+    // 歌名和歌手
     let (name, singer) = match song_singer {
         None => ("".to_string(), "".to_string()),
         Some(info) => {
@@ -20,11 +29,11 @@ fn get_song_info(song_path: PathBuf) {
                 name = x;
             }
             let singer = info_arr.join("-");
-            println!("匹配到：{:?}", info_arr);
             (name, singer)
         }
     };
     println!("歌名名为：{:?}, 歌手为：{}", name, singer);
+    Ok((singer, name, ext))
 }
 
 pub mod dialog {
