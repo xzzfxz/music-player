@@ -3,6 +3,7 @@
 
 mod api;
 mod dialog;
+mod file;
 mod song;
 use crate::api::outer_apis::{open_song_dialog, save_local_song_info};
 
