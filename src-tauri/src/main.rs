@@ -5,6 +5,7 @@ mod api;
 mod dialog;
 mod file;
 mod song;
+mod window;
 use crate::api::outer_apis::{open_song_dialog, save_local_song_info};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command

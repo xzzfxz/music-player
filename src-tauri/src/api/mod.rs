@@ -3,13 +3,17 @@ pub use super::song::SongInfo;
 
 pub mod outer_apis {
 
+    use tauri::Window;
+
+    use crate::window::CurrentWindow;
+
     use super::dialog;
     use super::SongInfo;
 
     #[tauri::command]
-    pub fn open_song_dialog(file_type: String, extensions: Vec<&str>) {
-        println!("打开文件对话框 {}, {:?}", file_type, extensions);
-        dialog::open_local_music(file_type, extensions);
+    pub fn open_song_dialog(window: Window, file_type: String, extensions: Vec<&str>) {
+        let cur_window = CurrentWindow::new(window);
+        dialog::open_local_music(cur_window, file_type, extensions);
     }
 
     #[tauri::command]

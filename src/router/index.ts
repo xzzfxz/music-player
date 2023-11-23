@@ -20,6 +20,11 @@ const routes: RouteRecordRaw[] = [
             path: 'localMusic',
             name: 'localMusic',
             component: () => import('@/views/local/index.vue')
+          },
+          {
+            path: 'iLike',
+            name: 'iLike',
+            component: () => import('@/views/like/index.vue')
           }
         ]
       }

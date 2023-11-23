@@ -33,6 +33,9 @@
 import MenuItem from '@/components/menuItem/index.vue';
 import { MenuCategory, MenuChild } from '@/interface';
 import { shallowReactive } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const state = shallowReactive({
   selectedItem: 'local',
@@ -58,13 +61,13 @@ const state = shallowReactive({
       },
       { id: 'download', name: '下载管理', icon: 'ri-download-2-line' },
       { id: 'iTunes', name: 'iTunes音乐', icon: 'ri-music-2-line' },
-      { id: 'local', name: '本地音乐', icon: 'ri-computer-line' }
+      { id: 'localMusic', name: '本地音乐', icon: 'ri-computer-line' }
     ]
   } as MenuCategory,
   selfCreateMenu: {
     title: '我喜欢',
     menuList: [
-      { id: 'like', name: '我喜欢', icon: 'ri-heart-3-line', color: 'red' },
+      { id: 'iLike', name: '我喜欢', icon: 'ri-heart-3-line', color: 'red' },
       { id: 'defaultCollect', name: '默认收藏', icon: 'ri-file-copy-2-line' },
       { id: 'defaultList', name: '默认列表' }
     ]
@@ -81,6 +84,7 @@ const state = shallowReactive({
 // 菜单改变
 const handleMenuChange = (menuItem: MenuChild) => {
   state.selectedItem = menuItem.id;
+  router.push({ name: menuItem.id });
 };
 </script>
 

@@ -33,16 +33,18 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { onBeforeUnmount, onMounted, reactive } from 'vue';
 import SongTable from './components/songTable.vue';
 import { MUSIC_EXT } from '@/const';
 // import { ElMessage } from 'element-plus';
 // import { getSingerAndName } from '@/utils';
 // import { SongInfo } from '@/interface';
 import { invoke } from '@tauri-apps/api';
+import { UnlistenFn, listen } from '@tauri-apps/api/event';
 
 const state = reactive({
-  filterValue: ''
+  filterValue: '',
+  reloadUnListen: undefined as unknown as UnlistenFn
 });
 
 // 显示添加音乐弹窗
@@ -51,38 +53,19 @@ const handleShowAddDialog = async () => {
     fileType: 'music',
     extensions: MUSIC_EXT
   });
-  // const selected = await open({
-  //   title: '选择音乐',
-  //   multiple: true,
-  //   recursive: false,
-  //   filters: [
-  //     {
-  //       name: 'music',
-  //       extensions: MUSIC_EXT
-  //     }
-  //   ]
-  // });
-  // if (!selected?.length) {
-  //   // 没有选中文件
-  //   ElMessage({
-  //     message: '没有选中文件',
-  //     type: 'warning'
-  //   });
-  //   return;
-  // }
-  // const songList: SongInfo[] = [];
-  // selected.forEach((song: any) => {
-  //   const res = getSingerAndName(song.name);
-  //   songList.push({
-  //     singer: res.singer,
-  //     name: res.songName,
-  //     path: song.path,
-  //     online: false
-  //   });
-  // });
-  // console.log(songList);
-  // await invoke('save_local_song_info', { list: songList });
 };
+
+onMounted(async () => {
+  state.reloadUnListen = await listen('reloadLocalSongList', (info: any) => {
+    console.log('这是后端传来的事件', info);
+  });
+});
+
+onBeforeUnmount(async () => {
+  if (state.reloadUnListen) {
+    state.reloadUnListen();
+  }
+});
 </script>
 
 <style lang="scss" scoped>
