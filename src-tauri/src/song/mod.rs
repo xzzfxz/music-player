@@ -11,16 +11,16 @@ use uuid::Uuid;
  */
 #[derive(Deserialize, Serialize, Debug)]
 pub struct SongInfo {
-    id: Uuid,
-    singer: String,
-    ext: String,
-    name: String,
-    path: String,
-    time: String,
-    duration: u32,
-    mv: bool,
-    album: bool,
-    online: bool,
+    pub id: Uuid,
+    pub singer: String,
+    pub name: String,
+    pub ext: String,
+    pub path: String,
+    pub time: String,
+    pub duration: u32,
+    pub mv: bool,
+    pub album: bool,
+    pub online: bool,
 }
 
 /**
