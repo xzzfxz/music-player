@@ -6,20 +6,32 @@ struct Payload {
 pub mod deal_file {
     use std::{
         error::Error,
-        fs::File,
+        fs::{self, OpenOptions},
         path::{Path, PathBuf},
     };
 
-    use csv::Writer;
+    use tauri::api::path;
+
+    use csv::{DeserializeRecordsIntoIter, Writer, WriterBuilder};
 
     use crate::{
-        file,
-        song::{get_song_model, SongInfo},
+        song::{self, get_song_model, SongInfo},
         window::CurrentWindow,
     };
 
+    const APP_PATH: &str = "MusicPlayer";
+
+    pub fn get_data_path() -> Option<PathBuf> {
+        if let Some(mut x) = path::data_dir() {
+            x.push(APP_PATH);
+            Some(x)
+        } else {
+            None
+        }
+    }
+
     pub fn write_song_csv(
-        window: &CurrentWindow,
+        cur_window: &CurrentWindow,
         paths: Vec<PathBuf>,
     ) -> Result<(), Box<dyn Error>> {
         let mut song_list: Vec<SongInfo> = vec![];
@@ -31,25 +43,41 @@ pub mod deal_file {
         }
         println!("这是最终的结果: {:?}", song_list);
         // 先判断本地文件是否存在
-        let file_path = Path::new("assets/local_song_list.csv");
+        let mut file_path = get_data_path().unwrap();
+        file_path.push("assets/local_song_list.csv");
+        let file_path: &Path = Path::new(&file_path);
+        let mut wtr;
+        let mut last_list = song_list;
         if file_path.exists() {
-            // 文件存在
+            // 文件存在，先读取已存在的，再根据path去重，最后追加
+            let rdr = csv::Reader::from_path(file_path).unwrap();
+            let iter: DeserializeRecordsIntoIter<fs::File, SongInfo> = rdr.into_deserialize();
+            let pre_lis: Vec<SongInfo> = iter.map(|song| song.unwrap()).collect();
+
+            last_list = last_list
+                .into_iter()
+                .filter(|song| {
+                    return !pre_lis.iter().any(|pre| pre.path == song.path);
+                })
+                .collect();
+
+            let file = OpenOptions::new()
+                .write(true)
+                .append(true)
+                .open(file_path)?;
+            wtr = WriterBuilder::new().has_headers(false).from_writer(file);
         } else {
             // 文件不存在，生成文件并直接把列表写入
-            File::create(file_path)?;
-            println!("开始写入文件");
-            let mut wtr = Writer::from_path(file_path)?;
-            for song in song_list.iter() {
-                wtr.serialize(song)?;
-            }
-            println!("写入磁盘");
-            wtr.flush()?;
+            fs::create_dir_all(file_path.parent().unwrap()).unwrap();
+            wtr = Writer::from_path(file_path)?;
         }
-        // 先获取本地文件列表
-        let rdr = csv::Reader::from_path("").unwrap();
-        println!("读取到的文件为: {:?}", rdr);
+        for song in last_list.iter() {
+            wtr.serialize(song)?;
+        }
+        println!("写入磁盘");
+        wtr.flush()?;
         // 通知前端更新列表
-        // window.front_reload_song();
+        cur_window.front_reload_song();
         Ok(())
     }
 }

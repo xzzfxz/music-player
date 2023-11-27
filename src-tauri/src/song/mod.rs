@@ -9,7 +9,7 @@ use uuid::Uuid;
  * @description: 歌曲信息
  * @return {*}
  */
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, PartialEq)]
 pub struct SongInfo {
     pub id: Uuid,
     pub singer: String,
