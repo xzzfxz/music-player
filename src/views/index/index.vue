@@ -29,6 +29,7 @@ import Menu from './component/menu.vue';
 .main-container {
   height: 100%;
   width: 0;
+  padding-bottom: calc($footBarHeight + 10px);
   background-color: #ffffff;
   flex-grow: 1;
   overflow: auto;

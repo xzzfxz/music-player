@@ -33,39 +33,24 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, reactive } from 'vue';
+import { reactive } from 'vue';
 import SongTable from './components/songTable.vue';
 import { MUSIC_EXT } from '@/const';
-// import { ElMessage } from 'element-plus';
-// import { getSingerAndName } from '@/utils';
-// import { SongInfo } from '@/interface';
 import { invoke } from '@tauri-apps/api';
-import { UnlistenFn, listen } from '@tauri-apps/api/event';
+
+import { EventName } from '@/const/event';
 
 const state = reactive({
-  filterValue: '',
-  reloadUnListen: undefined as unknown as UnlistenFn
+  filterValue: ''
 });
 
 // 显示添加音乐弹窗
 const handleShowAddDialog = async () => {
-  await invoke('open_song_dialog', {
+  await invoke(EventName.OPEN_SONG_DIALOG, {
     fileType: 'music',
     extensions: MUSIC_EXT
   });
 };
-
-onMounted(async () => {
-  state.reloadUnListen = await listen('reloadLocalSongList', (info: any) => {
-    console.log('这是后端传来的事件', info);
-  });
-});
-
-onBeforeUnmount(async () => {
-  if (state.reloadUnListen) {
-    state.reloadUnListen();
-  }
-});
 </script>
 
 <style lang="scss" scoped>

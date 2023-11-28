@@ -5,7 +5,9 @@
         <div class="song-container flex">
           <div class="left-container flex">
             <div class="title ellipsis">{{ row.name }}</div>
-            <div class="mv no-shrink flex-center click-active">MV</div>
+            <div class="mv no-shrink flex-center click-active" v-if="row.mv">
+              MV
+            </div>
             <div class="playing no-shrink flex-center">
               <i class="ri-rhythm-line"></i>
             </div>
@@ -42,7 +44,7 @@
     <el-table-column
       prop="time"
       label="时间"
-      align="right"
+      :align="'right'"
       show-overflow-tooltip
       width="80"
     />
@@ -50,17 +52,42 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { EventName } from '@/const/event';
+import { SongInfo } from '@/interface';
+import { invoke } from '@tauri-apps/api';
+import { onBeforeUnmount, onMounted, reactive } from 'vue';
+import { UnlistenFn, listen } from '@tauri-apps/api/event';
 
 const state = reactive({
-  tableData: [
-    { name: '起风了', singer: '这是一个歌', time: '02:55:55' },
-    {
-      name: '吹吹灭小山河吹灭小山河吹灭小山河吹灭小山河吹灭小山河灭小山河',
-      singer: '这是两个歌手',
-      time: '02:44'
-    }
-  ]
+  tableData: [] as SongInfo[],
+  reloadUnListen: undefined as unknown as UnlistenFn
+});
+
+// 添加本地音乐
+const handleAddList = (payload: any) => {
+  console.log(payload);
+  const list = payload.payload as SongInfo[];
+  state.tableData.push(...list);
+};
+
+// 初始化本地列表
+const initSongList = async () => {
+  let res = await invoke(EventName.GET_LOCAL_SONG_LIST);
+  console.log(res);
+  state.tableData = (res || []) as SongInfo[];
+};
+initSongList();
+
+onMounted(async () => {
+  listen(EventName.RELOAD_LOCAL_SONG_LIST, handleAddList).then((res: any) => {
+    state.reloadUnListen = res;
+  });
+});
+
+onBeforeUnmount(async () => {
+  if (state.reloadUnListen) {
+    state.reloadUnListen();
+  }
 });
 </script>
 
