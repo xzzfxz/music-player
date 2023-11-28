@@ -1,4 +1,13 @@
+use serde::Serialize;
+use strum_macros::Display;
 use tauri::Window;
+
+#[derive(Display)]
+pub enum EventName {
+    // 通知前端刷新本地音乐列表
+    #[strum(serialize = "reloadLocalSongList")]
+    ReloadLocalSongList,
+}
 
 /**
  * @description: 用来保存当前窗口实例
@@ -14,11 +23,11 @@ impl CurrentWindow {
     }
 
     /**
-     * @description: 通知前端刷新本地音乐列表
+     * @description: 向前端发送事件
      * @return {*}
      */
-    pub fn front_reload_song(self: &Self) {
+    pub fn event_to_front(self: &Self, event_name: String, payload: impl Serialize + Clone) {
         println!("开始向前端发送事件");
-        self.window.emit("reloadLocalSongList", {}).unwrap();
+        self.window.emit(&event_name, payload).unwrap();
     }
 }

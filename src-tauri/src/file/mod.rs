@@ -1,66 +1,81 @@
+pub mod file_error;
+
 #[derive(Clone, serde::Serialize)]
 struct Payload {
     message: String,
 }
 
 pub mod deal_file {
+    use super::file_error::FileError;
+    use crate::{
+        song::{get_song_model, SongInfo},
+        window::{CurrentWindow, EventName},
+    };
+    use anyhow::{anyhow, Context, Result};
+    use csv::{DeserializeRecordsIntoIter, Writer, WriterBuilder};
     use std::{
-        error::Error,
         fs::{self, OpenOptions},
         path::{Path, PathBuf},
     };
-
     use tauri::api::path;
-
-    use csv::{DeserializeRecordsIntoIter, Writer, WriterBuilder};
-
-    use crate::{
-        song::{self, get_song_model, SongInfo},
-        window::CurrentWindow,
-    };
 
     const APP_PATH: &str = "MusicPlayer";
 
-    pub fn get_data_path() -> Option<PathBuf> {
-        if let Some(mut x) = path::data_dir() {
-            x.push(APP_PATH);
-            Some(x)
-        } else {
-            None
-        }
+    /**
+     * @description: 获取保存数据的根路径
+     * @return {*}
+     */
+    pub fn get_data_path() -> Result<PathBuf> {
+        path::data_dir()
+            .map(|mut x| {
+                x.push(APP_PATH);
+                x
+            })
+            .ok_or(anyhow!(FileError::PathError))
     }
 
-    pub fn write_song_csv(
-        cur_window: &CurrentWindow,
-        paths: Vec<PathBuf>,
-    ) -> Result<(), Box<dyn Error>> {
-        let mut song_list: Vec<SongInfo> = vec![];
-        for song_path in paths.iter() {
-            match get_song_model(song_path) {
-                Ok(song_item) => song_list.push(song_item),
-                Err(info) => println!("这是打开文件的错误信息: {}", info),
-            }
-        }
-        println!("这是最终的结果: {:?}", song_list);
-        // 先判断本地文件是否存在
-        let mut file_path = get_data_path().unwrap();
+    /**
+     * @description: 读取本地歌曲csv文件
+     * @return {*}
+     */
+    pub fn read_song_csv() -> Result<Vec<SongInfo>> {
+        let mut file_path = get_data_path()?;
         file_path.push("assets/local_song_list.csv");
         let file_path: &Path = Path::new(&file_path);
+        let rdr = csv::Reader::from_path(file_path).context(FileError::FileReadFail)?;
+        let iter: DeserializeRecordsIntoIter<fs::File, SongInfo> = rdr.into_deserialize();
+        let list: Vec<SongInfo> = iter.map(|song| song.unwrap()).collect();
+        Ok(list)
+    }
+
+    /**
+     * @description: 写入歌曲列表文件
+     * @param {*} cur_window 当前窗口实例
+     * @param {Vec} paths 获取到的歌曲路径
+     * @param {*} Result 写入结果
+     * @return {*}
+     */
+    pub fn write_song_csv(cur_window: &CurrentWindow, paths: Vec<PathBuf>) -> Result<()> {
+        let mut song_list: Vec<SongInfo> = vec![];
+        for song_path in paths.iter() {
+            let song_item = get_song_model(song_path)?;
+            song_list.push(song_item)
+        }
+        // 先读取本地文件
+        let mut file_path = get_data_path()?;
+        file_path.push("assets/local_song_list.csv");
+        let file_path: &Path = Path::new(&file_path);
+
         let mut wtr;
         let mut last_list = song_list;
-        if file_path.exists() {
-            // 文件存在，先读取已存在的，再根据path去重，最后追加
-            let rdr = csv::Reader::from_path(file_path).unwrap();
-            let iter: DeserializeRecordsIntoIter<fs::File, SongInfo> = rdr.into_deserialize();
-            let pre_lis: Vec<SongInfo> = iter.map(|song| song.unwrap()).collect();
 
+        if let Ok(pre_list) = read_song_csv() {
             last_list = last_list
                 .into_iter()
                 .filter(|song| {
-                    return !pre_lis.iter().any(|pre| pre.path == song.path);
+                    return !pre_list.iter().any(|pre| pre.path == song.path);
                 })
                 .collect();
-
             let file = OpenOptions::new()
                 .write(true)
                 .append(true)
@@ -74,10 +89,9 @@ pub mod deal_file {
         for song in last_list.iter() {
             wtr.serialize(song)?;
         }
-        println!("写入磁盘");
         wtr.flush()?;
         // 通知前端更新列表
-        cur_window.front_reload_song();
+        cur_window.event_to_front(EventName::ReloadLocalSongList.to_string(), &last_list);
         Ok(())
     }
 }

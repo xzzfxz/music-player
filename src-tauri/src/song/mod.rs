@@ -1,3 +1,9 @@
+pub mod song_error;
+
+use song_error::SongError;
+
+use super::file::file_error::FileError;
+use anyhow::{anyhow, Result};
 use claxon::FlacReader;
 use hound::WavReader;
 use mp3_duration;
@@ -73,31 +79,27 @@ fn get_song_duration(ext: &String, song_path: &PathBuf) -> (String, u32) {
  * @param {*} String
  * @return {*}
  */
-fn get_song_info(song_path: &PathBuf) -> Result<(String, String, String), String> {
+fn get_song_info(song_path: &PathBuf) -> Result<(String, String, String)> {
     if !song_path.exists() {
-        println!("文件不存在: {:?}", song_path);
-        return Err(format!("文件不存在: {:?}", song_path));
+        return Err(anyhow!(FileError::FileNotFound));
     }
     // 后缀名
-    let ext = song_path.extension().unwrap().to_string_lossy().into();
-    let song_singer = song_path.file_stem();
+    let ext: String = song_path
+        .extension()
+        .ok_or(anyhow!(SongError::ExtError))?
+        .to_string_lossy()
+        .into();
+    let song_singer = song_path
+        .file_stem()
+        .ok_or(anyhow!(FileError::FileNameFail))?;
     // 歌名和歌手
-    let (name, singer) = match song_singer {
-        None => ("".to_string(), "".to_string()),
-        Some(info) => {
-            let mut info_arr: Vec<String> = info
-                .to_string_lossy()
-                .split("-")
-                .map(|item| item.trim().to_string())
-                .collect();
-            let mut name = String::from("");
-            if let Some(x) = info_arr.pop() {
-                name = x;
-            }
-            let singer = info_arr.join("-");
-            (name, singer)
-        }
-    };
+    let mut info_arr: Vec<String> = song_singer
+        .to_string_lossy()
+        .split("-")
+        .map(|item| item.trim().to_string())
+        .collect();
+    let name = info_arr.pop().ok_or(anyhow!(SongError::NameError))?;
+    let singer = info_arr.join("-");
     Ok((singer, name, ext))
 }
 
@@ -106,13 +108,9 @@ fn get_song_info(song_path: &PathBuf) -> Result<(String, String, String), String
  * @param {*} song_path
  * @return {*}
  */
-pub fn get_song_model(song_path: &PathBuf) -> Result<SongInfo, String> {
+pub fn get_song_model(song_path: &PathBuf) -> Result<SongInfo> {
     // 先获取歌手，歌名，后缀
-    let (singer, name, ext);
-    match get_song_info(song_path) {
-        Ok(res) => (singer, name, ext) = res,
-        Err(info) => return Err(info),
-    }
+    let (singer, name, ext) = get_song_info(song_path)?;
     // 再获取时长
     let (time, duration) = get_song_duration(&ext, song_path);
     Ok(SongInfo {

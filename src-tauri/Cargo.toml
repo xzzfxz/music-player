@@ -21,6 +21,10 @@ mp3-duration = "0.1.10"
 hound = "3.5.1"
 claxon = "0.4.3"
 uuid = {version = "1.6.1", features = ["v4", "serde"] }
+strum = "0.25.0"
+strum_macros = "0.25.3"
+anyhow = "1.0.75"
+thiserror = "1.0.50"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
