@@ -12,8 +12,12 @@
               <i class="ri-rhythm-line"></i>
             </div>
           </div>
-          <div class="right-container flex no-shrink" title="播放">
-            <div class="icon-container click-active">
+          <div class="right-container flex no-shrink">
+            <div
+              class="icon-container click-active"
+              title="播放"
+              @click="handlePlay(row)"
+            >
               <i class="ri-play-line"></i>
             </div>
             <div class="icon-container click-active">
@@ -57,15 +61,22 @@ import { SongInfo } from '@/interface';
 import { invoke } from '@tauri-apps/api';
 import { onBeforeUnmount, onMounted, reactive } from 'vue';
 import { UnlistenFn, listen } from '@tauri-apps/api/event';
+import useMainStore from '@/store';
+
+const mainStore = useMainStore();
 
 const state = reactive({
   tableData: [] as SongInfo[],
   reloadUnListen: undefined as unknown as UnlistenFn
 });
 
+// 播放
+const handlePlay = (songInfo: SongInfo) => {
+  mainStore.setCurrentSong(songInfo);
+};
+
 // 添加本地音乐
 const handleAddList = (payload: any) => {
-  console.log(payload);
   const list = payload.payload as SongInfo[];
   state.tableData.push(...list);
 };
@@ -73,12 +84,11 @@ const handleAddList = (payload: any) => {
 // 初始化本地列表
 const initSongList = async () => {
   let res = await invoke(EventName.GET_LOCAL_SONG_LIST);
-  console.log(res);
   state.tableData = (res || []) as SongInfo[];
 };
 initSongList();
 
-onMounted(async () => {
+onMounted(() => {
   listen(EventName.RELOAD_LOCAL_SONG_LIST, handleAddList).then((res: any) => {
     state.reloadUnListen = res;
   });

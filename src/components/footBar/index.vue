@@ -81,6 +81,7 @@
       </div>
     </div>
   </div>
+  <Play />
 </template>
 
 <script setup lang="ts">
@@ -91,6 +92,7 @@ import toPauseImg from '@/assets/imgs/toPause.png';
 import { reactive } from 'vue';
 import SoundQuality from './component/soundQuality.vue';
 import TextScroll from '@/components/TextScroll/index.vue';
+import Play from './component/play.vue';
 
 const state = reactive({
   playing: false,
