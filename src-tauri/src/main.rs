@@ -6,7 +6,7 @@ mod dialog;
 mod file;
 mod song;
 mod window;
-use crate::api::outer_apis::{get_local_song_list, open_song_dialog};
+use crate::api::outer_apis::{get_local_song_list, open_song_dialog, read_local_song};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 
@@ -14,7 +14,8 @@ fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             get_local_song_list,
-            open_song_dialog
+            open_song_dialog,
+            read_local_song
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

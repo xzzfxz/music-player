@@ -62,6 +62,7 @@ import { invoke } from '@tauri-apps/api';
 import { onBeforeUnmount, onMounted, reactive } from 'vue';
 import { UnlistenFn, listen } from '@tauri-apps/api/event';
 import useMainStore from '@/store';
+import emitter from '@/utils/eventHub';
 
 const mainStore = useMainStore();
 
@@ -73,6 +74,7 @@ const state = reactive({
 // 播放
 const handlePlay = (songInfo: SongInfo) => {
   mainStore.setCurrentSong(songInfo);
+  emitter.emit('music.play');
 };
 
 // 添加本地音乐
