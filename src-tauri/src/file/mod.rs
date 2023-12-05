@@ -14,8 +14,7 @@ pub mod deal_file {
     use anyhow::{anyhow, Context, Result};
     use csv::{DeserializeRecordsIntoIter, Writer, WriterBuilder};
     use std::{
-        fs::{self, File, OpenOptions},
-        io::Read as _,
+        fs::{self, OpenOptions},
         path::{Path, PathBuf},
     };
     use tauri::api::path;
@@ -94,22 +93,5 @@ pub mod deal_file {
         // 通知前端更新列表
         cur_window.event_to_front(EventName::ReloadLocalSongList.to_string(), &last_list);
         Ok(())
-    }
-
-    /**
-     * @description: 将本地文件转为音频流
-     * @param {String} file_path 文件路径
-     * @return {*}
-     */
-    pub async fn read_local_song(file_path: String) -> Result<Vec<u8>> {
-        let file_path_clone = file_path.clone();
-        let result = tokio::task::spawn_blocking(move || {
-            let mut file = File::open(file_path_clone)?;
-            let mut buffer = Vec::new();
-            file.read_to_end(&mut buffer)?;
-            Ok(buffer)
-        })
-        .await;
-        result?
     }
 }

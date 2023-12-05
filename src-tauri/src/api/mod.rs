@@ -37,20 +37,4 @@ pub mod outer_apis {
             }
         }
     }
-
-    /**
-     * @description: 将本地文件转为音频流
-     * @param {String} file_path 文件路径
-     * @return {*}
-     */
-    #[tauri::command]
-    pub async fn read_local_song(file_path: String) -> Vec<u8> {
-        match file::deal_file::read_local_song(file_path).await {
-            Ok(res) => res,
-            Err(info) => {
-                println!("读取音频流发生错误: {}", info);
-                vec![]
-            }
-        }
-    }
 }
