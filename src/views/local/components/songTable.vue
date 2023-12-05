@@ -1,5 +1,5 @@
 <template>
-  <el-table highlight-current-row style="width: 100%" :data="state.tableData">
+  <el-table highlight-current-row style="width: 100%" :data="props.list">
     <el-table-column prop="name" label="歌曲名" width="390">
       <template #default="{ row }">
         <div class="song-container flex">
@@ -56,51 +56,27 @@
 </template>
 
 <script setup lang="ts">
-import { EventName } from '@/const/event';
 import { SongInfo } from '@/interface';
-import { invoke } from '@tauri-apps/api';
-import { onBeforeUnmount, onMounted, reactive } from 'vue';
-import { UnlistenFn, listen } from '@tauri-apps/api/event';
+import { PropType } from 'vue';
 import useMainStore from '@/store';
 import emitter from '@/utils/eventHub';
 
-const mainStore = useMainStore();
-
-const state = reactive({
-  tableData: [] as SongInfo[],
-  reloadUnListen: undefined as unknown as UnlistenFn
+const props = defineProps({
+  list: {
+    type: Array as PropType<SongInfo[]>,
+    default: () => []
+  }
 });
+
+const mainStore = useMainStore();
 
 // 播放
 const handlePlay = (songInfo: SongInfo) => {
   mainStore.setCurrentSong(songInfo);
-  emitter.emit('music.play');
+  emitter.emit('music.play', true);
 };
 
-// 添加本地音乐
-const handleAddList = (payload: any) => {
-  const list = payload.payload as SongInfo[];
-  state.tableData.push(...list);
-};
-
-// 初始化本地列表
-const initSongList = async () => {
-  let res = await invoke(EventName.GET_LOCAL_SONG_LIST);
-  state.tableData = (res || []) as SongInfo[];
-};
-initSongList();
-
-onMounted(() => {
-  listen(EventName.RELOAD_LOCAL_SONG_LIST, handleAddList).then((res: any) => {
-    state.reloadUnListen = res;
-  });
-});
-
-onBeforeUnmount(async () => {
-  if (state.reloadUnListen) {
-    state.reloadUnListen();
-  }
-});
+defineExpose({ handlePlay });
 </script>
 
 <style lang="scss" scoped>

@@ -20,8 +20,21 @@ const state = reactive({
 });
 
 // 播放
-const handleMusicPlay = async () => {
-  state.songInfo = mainStore.getCurrentSong();
+const handleMusicPlay = async (isPlay: boolean = false) => {
+  if (!isPlay) {
+    // 暂停
+    audioRef.value.pause();
+    mainStore.setIsPlaying(false);
+    return;
+  }
+  const storeSong = mainStore.getCurrentSong();
+  if (state.songInfo.id === storeSong.id) {
+    // 由暂停直接播放
+    audioRef.value.play();
+    mainStore.setIsPlaying(true);
+    return;
+  }
+  state.songInfo = storeSong;
   // state.src =
   //   'https://webfs.hw.kugou.com/202312041620/9b5c4918bba5edca35f0b6313259e631/v2/3db322e5cdd76350323e8cee789becab/G286/M09/42/8B/_pQEAGVTV1SACnKYAD9ID-Yz3BY281.mp3';
   if (state.songInfo.online) {
@@ -34,6 +47,7 @@ const handleMusicPlay = async () => {
   }
   nextTick(() => {
     audioRef.value.play();
+    mainStore.setIsPlaying(true);
   });
 };
 

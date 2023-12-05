@@ -24,6 +24,7 @@ export interface MenuCategory {
  * @return {*}
  */
 export interface SongInfo {
+  avatar?: string;
   id?: string;
   singer: string;
   name: string;

@@ -2,7 +2,7 @@ import mitt from 'mitt';
 
 type Events = {
   // 播放
-  'music.play': void;
+  'music.play': boolean;
 };
 
 export const emitter = mitt<Events>();

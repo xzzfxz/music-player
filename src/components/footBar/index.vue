@@ -2,19 +2,24 @@
   <div class="foot-bar-container flex">
     <div class="foot-bar-left flex">
       <div class="control-container flex">
-        <div class="to-up-down click-active">
+        <div class="to-up-down click-active" @click="handleUpDownSong(true)">
           <img class="image" :src="toUpImg" alt="" />
         </div>
         <div class="play-pause click-active" @click="handlePlayPause">
-          <img v-if="state.playing" class="image" :src="toPauseImg" alt="" />
+          <img
+            v-if="mainStore.isPlaying"
+            class="image"
+            :src="toPauseImg"
+            alt=""
+          />
           <img v-else class="image" :src="toPlayImg" alt="" />
         </div>
-        <div class="to-up-down click-active">
+        <div class="to-up-down click-active" @click="handleUpDownSong(false)">
           <img class="image" :src="toDownImg" alt="" />
         </div>
       </div>
       <div class="avatar-container">
-        <img :src="state.avatarUrl" alt="" class="image" />
+        <img :src="curSong.avatar" alt="" class="image" />
       </div>
       <div class="play-info-container">
         <div class="music-info-container flex">
@@ -23,7 +28,7 @@
               <SoundQuality />
             </div>
             <div class="song-info">
-              <TextScroll :text="state.songInfo" />
+              <TextScroll :text="curSong.singer + ' - ' + curSong.name" />
             </div>
           </div>
           <div class="right-container flex no-shrink">00:18 / 04:02</div>
@@ -89,15 +94,16 @@ import toUpImg from '@/assets/imgs/toUp.png';
 import toDownImg from '@/assets/imgs/toDown.png';
 import toPlayImg from '@/assets/imgs/toPlay.png';
 import toPauseImg from '@/assets/imgs/toPause.png';
-import { reactive } from 'vue';
+import { computed, reactive } from 'vue';
 import SoundQuality from './component/soundQuality.vue';
 import TextScroll from '@/components/TextScroll/index.vue';
 import Play from './component/play.vue';
+import useMainStore from '@/store';
+import emitter from '@/utils/eventHub';
+
+const mainStore = useMainStore();
 
 const state = reactive({
-  playing: false,
-  avatarUrl: '',
-  songInfo: '风吹沙 - 蝶恋花，古道旁，我欲语泪先下，山河大好',
   cacheProgress: 50,
   playProgress: 30,
   playMin: 0,
@@ -105,9 +111,35 @@ const state = reactive({
   hasLiked: true
 });
 
+// 当前歌曲
+const curSong = computed(() => {
+  return mainStore.getCurrentSong();
+});
+
 // 播放与暂停
 const handlePlayPause = () => {
-  state.playing = !state.playing;
+  emitter.emit('music.play', !mainStore.isPlaying);
+};
+
+// 上一曲------下一曲
+const handleUpDownSong = (isUp: boolean) => {
+  const list = mainStore.getPlayList();
+  let index = list.findIndex(item => item.id === curSong.value.id);
+  if (isUp) {
+    // 上一曲
+    if (index < 1) {
+      return;
+    }
+    index--;
+  } else {
+    // 下一曲
+    if (index < list.length - 1) {
+      index++;
+    }
+  }
+  mainStore.setIsPlaying(false);
+  mainStore.setCurrentSong(list[index]);
+  emitter.emit('music.play', true);
 };
 
 // 播放进度改变
@@ -192,9 +224,9 @@ const handlePlayProgressChange = (val: number) => {
     }
   }
   :deep(.el-slider) {
-    height: 3px;
+    height: 5px;
     .el-slider__runway {
-      height: 3px;
+      height: 5px;
       background-color: transparent;
     }
     $markWidth: 7px;

@@ -4,14 +4,27 @@ import { defineStore } from 'pinia';
 export const useMainStore = defineStore('main', {
   state() {
     return {
-      currentSong: undefined as unknown as SongInfo
+      // 播放中
+      isPlaying: false,
+      // 当前播放的歌曲
+      currentSong: undefined as unknown as SongInfo,
+      // 播放列表
+      playList: [] as SongInfo[]
     };
   },
   persist: {
     storage: localStorage,
-    paths: ['currentSong']
+    paths: ['currentSong', 'playList']
   },
   actions: {
+    /**
+     * @description: 设置是否正在播放
+     * @param {boolean} isPlaying
+     * @return {*}
+     */
+    setIsPlaying(isPlaying: boolean) {
+      this.isPlaying = isPlaying;
+    },
     /**
      * @description: 设置当前播放的歌曲
      * @param {SongInfo} songInfo
@@ -22,6 +35,17 @@ export const useMainStore = defineStore('main', {
     },
     getCurrentSong() {
       return { ...(this.currentSong || {}) };
+    },
+    /**
+     * @description: 播放列表
+     * @param {SongInfo} list
+     * @return {*}
+     */
+    setPlayList(list: SongInfo[]) {
+      this.playList = [...list];
+    },
+    getPlayList() {
+      return [...this.playList];
     }
   }
 });

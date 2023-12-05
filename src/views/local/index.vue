@@ -1,11 +1,11 @@
 <template>
   <div class="title-container flex">
     <div class="title">本地音乐</div>
-    <div class="total">(2首)</div>
+    <div class="total">({{ state.tableData.length }}首)</div>
   </div>
   <div class="deal-container flex">
     <div class="left-container flex">
-      <el-button type="primary" class="deal-btn">
+      <el-button type="primary" class="deal-btn" @click="handlePlayAll">
         <i class="ri-play-line deal-icon"></i>
         播放全部
       </el-button>
@@ -28,21 +28,49 @@
     </div>
   </div>
   <div class="song-container">
-    <SongTable />
+    <SongTable ref="songTableRef" :list="songList" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import SongTable from './components/songTable.vue';
 import { MUSIC_EXT } from '@/const';
 import { invoke } from '@tauri-apps/api';
 
 import { EventName } from '@/const/event';
+import { SongInfo } from '@/interface';
+import { UnlistenFn, listen } from '@tauri-apps/api/event';
+import useMainStore from '@/store';
+
+const mainStore = useMainStore();
+
+const songTableRef = ref();
 
 const state = reactive({
-  filterValue: ''
+  filterValue: '',
+  tableData: [] as SongInfo[],
+  reloadUnListen: undefined as unknown as UnlistenFn
 });
+
+// 过滤后的列表
+const songList = computed(() => {
+  if (!state.filterValue) {
+    return state.tableData;
+  }
+  return state.tableData.filter((song: SongInfo) => {
+    return (
+      song.name?.includes(state.filterValue) ||
+      song.singer?.includes(state.filterValue)
+    );
+  });
+});
+
+// 播放全部
+const handlePlayAll = () => {
+  mainStore.setPlayList(songList.value);
+  songTableRef.value?.handlePlay(songList.value[0]);
+};
 
 // 显示添加音乐弹窗
 const handleShowAddDialog = async () => {
@@ -51,6 +79,31 @@ const handleShowAddDialog = async () => {
     extensions: MUSIC_EXT
   });
 };
+
+// 添加本地音乐
+const handleAddList = (payload: any) => {
+  const list = payload.payload as SongInfo[];
+  state.tableData.push(...list);
+};
+
+// 初始化本地列表
+const initSongList = async () => {
+  let res = await invoke(EventName.GET_LOCAL_SONG_LIST);
+  state.tableData = (res || []) as SongInfo[];
+};
+initSongList();
+
+onMounted(() => {
+  listen(EventName.RELOAD_LOCAL_SONG_LIST, handleAddList).then((res: any) => {
+    state.reloadUnListen = res;
+  });
+});
+
+onBeforeUnmount(async () => {
+  if (state.reloadUnListen) {
+    state.reloadUnListen();
+  }
+});
 </script>
 
 <style lang="scss" scoped>

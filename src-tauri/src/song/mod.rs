@@ -27,6 +27,7 @@ pub struct SongInfo {
     pub mv: bool,
     pub album: bool,
     pub online: bool,
+    pub avatar: Option<String>,
 }
 
 /**
@@ -124,5 +125,6 @@ pub fn get_song_model(song_path: &PathBuf) -> Result<SongInfo> {
         mv: false,
         album: false,
         online: false,
+        avatar: None,
     })
 }
