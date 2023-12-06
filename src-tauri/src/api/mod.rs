@@ -37,4 +37,21 @@ pub mod outer_apis {
             }
         }
     }
+
+    /**
+     * @description: 从csv中删除歌曲，并删除对应文件
+     * @param {String} song_path 歌曲路径
+     * @param {bool} delete_file 是否删除文件
+     * @return {*}
+     */
+    #[tauri::command]
+    pub async fn delete_local_song(song_path: String, delete_file: bool) -> String {
+        match file::deal_file::delete_local_song(song_path, delete_file).await {
+            Ok(_) => "ok".to_string(),
+            Err(info) => {
+                println!("删除歌曲发生错误: {}", info);
+                format!("{:?}", info)
+            }
+        }
+    }
 }

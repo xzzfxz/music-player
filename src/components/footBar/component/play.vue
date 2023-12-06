@@ -16,6 +16,8 @@ import useMainStore from '@/store';
 import emitter from '@/utils/eventHub';
 import { onBeforeUnmount, onMounted, reactive, ref, nextTick } from 'vue';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
+import { exists } from '@tauri-apps/api/fs';
+import { ElMessage } from 'element-plus';
 
 const emit = defineEmits(['currentTimeChange', 'bufferChange', 'playEnd']);
 
@@ -50,7 +52,12 @@ const handleMusicPlay = async (isPlay: boolean = false) => {
     state.src = state.songInfo.path;
   } else {
     // 本地文件
-    const filePath = await convertFileSrc(state.songInfo.path);
+    const isExist = await exists(state.songInfo.path);
+    if (!isExist) {
+      ElMessage.error('文件不存在!');
+      return;
+    }
+    const filePath = convertFileSrc(state.songInfo.path);
     state.src = filePath;
   }
   nextTick(() => {

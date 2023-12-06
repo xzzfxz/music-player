@@ -28,7 +28,7 @@
     </div>
   </div>
   <div class="song-container">
-    <SongTable ref="songTableRef" :list="songList" />
+    <SongTable ref="songTableRef" :list="songList" @reloadList="initSongList" />
   </div>
 </template>
 
@@ -80,12 +80,6 @@ const handleShowAddDialog = async () => {
   });
 };
 
-// 添加本地音乐
-const handleAddList = (payload: any) => {
-  const list = payload.payload as SongInfo[];
-  state.tableData.push(...list);
-};
-
 // 初始化本地列表
 const initSongList = async () => {
   let res = await invoke(EventName.GET_LOCAL_SONG_LIST);
@@ -94,7 +88,7 @@ const initSongList = async () => {
 initSongList();
 
 onMounted(() => {
-  listen(EventName.RELOAD_LOCAL_SONG_LIST, handleAddList).then((res: any) => {
+  listen(EventName.RELOAD_LOCAL_SONG_LIST, initSongList).then((res: any) => {
     state.reloadUnListen = res;
   });
 });

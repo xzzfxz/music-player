@@ -19,7 +19,10 @@
         "all": true
       },
       "fs": {
-        "all": true
+        "all": true,
+        "scope": [
+          "*/**"
+        ]
       },
       "protocol": {
         "all": false,

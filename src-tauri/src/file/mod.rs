@@ -35,12 +35,21 @@ pub mod deal_file {
     }
 
     /**
+     * @description: 获取csv文件路径
+     * @return {*}
+     */
+    fn get_song_csv_path() -> Result<PathBuf> {
+        let mut file_path: PathBuf = get_data_path()?;
+        file_path.push("assets/local_song_list.csv");
+        Ok(file_path)
+    }
+
+    /**
      * @description: 读取本地歌曲csv文件
      * @return {*}
      */
     pub fn read_song_csv() -> Result<Vec<SongInfo>> {
-        let mut file_path = get_data_path()?;
-        file_path.push("assets/local_song_list.csv");
+        let file_path = get_song_csv_path()?;
         let file_path: &Path = Path::new(&file_path);
         let rdr = csv::Reader::from_path(file_path).context(FileError::FileReadFail)?;
         let iter: DeserializeRecordsIntoIter<fs::File, SongInfo> = rdr.into_deserialize();
@@ -62,8 +71,7 @@ pub mod deal_file {
             song_list.push(song_item)
         }
         // 先读取本地文件
-        let mut file_path = get_data_path()?;
-        file_path.push("assets/local_song_list.csv");
+        let file_path = get_song_csv_path()?;
         let file_path: &Path = Path::new(&file_path);
 
         let mut wtr;
@@ -91,7 +99,33 @@ pub mod deal_file {
         }
         wtr.flush()?;
         // 通知前端更新列表
-        cur_window.event_to_front(EventName::ReloadLocalSongList.to_string(), &last_list);
+        cur_window.event_to_front(EventName::ReloadLocalSongList.to_string(), {});
         Ok(())
+    }
+
+    /**
+     * @description: 从csv中删除歌曲，并删除对应文件
+     * @param {String} song_path 歌曲路径
+     * @param {bool} delete_file 是否删除文件
+     * @return {*}
+     */
+    pub async fn delete_local_song(song_path: String, delete_file: bool) -> Result<bool> {
+        let list = read_song_csv()?;
+        let last_list: Vec<SongInfo> = list
+            .into_iter()
+            .filter(|song| song.path != song_path)
+            .collect();
+        let file_path = get_song_csv_path()?;
+        let mut wtr = Writer::from_path(file_path)?;
+        for song in last_list.iter() {
+            wtr.serialize(song)?;
+        }
+        wtr.flush()?;
+        if delete_file {
+            // 删除本地文件
+            let _ = tokio::fs::remove_file(song_path).await?;
+            return Ok(true);
+        }
+        Ok(true)
     }
 }
