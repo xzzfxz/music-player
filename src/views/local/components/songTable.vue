@@ -48,6 +48,9 @@
                     <el-dropdown-item :command="MENU_EVENT.DELETE_FILE">
                       删除(包含文件)
                     </el-dropdown-item>
+                    <el-dropdown-item :command="MENU_EVENT.OPEN_FOLDER">
+                      打开所在文件夹
+                    </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -121,6 +124,9 @@ const handleCommand = async (command: MENU_EVENT, songInfo: SongInfo) => {
     if (res !== 'ok') {
       console.log('删除歌曲发生错误', res);
     }
+  } else if (MENU_EVENT.OPEN_FOLDER === command) {
+    // 打开文件夹
+    invoke('open_folder', { filePath: songInfo.path });
   }
 };
 

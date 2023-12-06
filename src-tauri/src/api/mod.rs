@@ -54,4 +54,15 @@ pub mod outer_apis {
             }
         }
     }
+
+    /**
+     * @description: 打开文件夹
+     * @param {String} file_path 文件路径
+     * @return {*}
+     */
+    #[tauri::command]
+    pub async fn open_folder(file_path: String) -> bool {
+        file::deal_file::open_folder(file_path);
+        true
+    }
 }

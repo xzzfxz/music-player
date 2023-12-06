@@ -3,7 +3,12 @@
  * @return {*}
  */
 export enum MENU_EVENT {
+  // 播放
   PLAY = 'play',
+  // 删除
   DELETE = 'delete',
-  DELETE_FILE = 'deleteFile'
+  // 删除（包含文件）
+  DELETE_FILE = 'deleteFile',
+  // 打开所在文件夹
+  OPEN_FOLDER = 'openFolder'
 }

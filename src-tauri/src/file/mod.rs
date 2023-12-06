@@ -16,6 +16,7 @@ pub mod deal_file {
     use std::{
         fs::{self, OpenOptions},
         path::{Path, PathBuf},
+        process::Command,
     };
     use tauri::api::path;
 
@@ -127,5 +128,19 @@ pub mod deal_file {
             return Ok(true);
         }
         Ok(true)
+    }
+
+    /**
+     * @description: 打开文件夹
+     * @param {String} file_path 文件路径
+     * @return {*}
+     */
+    pub fn open_folder(file_path: String) {
+        let parent = Path::new(&file_path).parent().unwrap();
+        let status = Command::new("open").arg(parent).status();
+        match status {
+            Ok(status) => println!("状态: {}", status),
+            Err(info) => println!("发生错误: {}", info),
+        }
     }
 }
