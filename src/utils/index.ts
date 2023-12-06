@@ -20,3 +20,33 @@ export const getSingerAndName = (name: string) => {
   const singer = arr.join('-') || '未知歌手';
   return { songName, singer };
 };
+
+/**
+ * @description: 数字小于10时补0
+ * @param {number} num
+ * @return {*}
+ */
+export const formatZero = (num: number) => {
+  if (num < 10) {
+    return '0' + num;
+  }
+  return num + '';
+};
+
+/**
+ * @description: 格式化时间格式：HH:mm:ss
+ * @param {number} time
+ * @return {*}
+ */
+export const getFormatPlayTime = (time: number) => {
+  let lastTime = '';
+  const hour = Math.floor(time / 60 / 60);
+  if (hour > 0) {
+    lastTime += formatZero(hour) + ':';
+  }
+  const min = Math.floor((time - hour * 60 * 60) / 60);
+  lastTime += formatZero(min) + ':';
+  const sec = (time - hour * 60 * 60 - min * 60) % 60;
+  lastTime += formatZero(sec);
+  return lastTime;
+};

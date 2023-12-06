@@ -31,7 +31,9 @@
               <TextScroll :text="curSong.singer + ' - ' + curSong.name" />
             </div>
           </div>
-          <div class="right-container flex no-shrink">00:18 / 04:02</div>
+          <div class="right-container flex no-shrink">
+            {{ playedTime }} / {{ curSong.time }}
+          </div>
         </div>
         <div class="play-progress-container">
           <div class="cache-container">
@@ -45,8 +47,8 @@
           <div class="cache-container">
             <el-slider
               v-model="state.playProgress"
-              :min="state.playMin"
-              :max="state.playMax"
+              :min="0"
+              :max="curSong.duration"
               :show-tooltip="false"
               @change="handlePlayProgressChange"
             />
@@ -86,7 +88,12 @@
       </div>
     </div>
   </div>
-  <Play />
+  <Play
+    ref="playRef"
+    @currentTimeChange="handleCurrentTimeChange"
+    @bufferChange="handleBufferChange"
+    @playEnd="handlePlayEnd"
+  />
 </template>
 
 <script setup lang="ts">
@@ -94,26 +101,32 @@ import toUpImg from '@/assets/imgs/toUp.png';
 import toDownImg from '@/assets/imgs/toDown.png';
 import toPlayImg from '@/assets/imgs/toPlay.png';
 import toPauseImg from '@/assets/imgs/toPause.png';
-import { computed, reactive } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import SoundQuality from './component/soundQuality.vue';
 import TextScroll from '@/components/TextScroll/index.vue';
 import Play from './component/play.vue';
 import useMainStore from '@/store';
 import emitter from '@/utils/eventHub';
+import { getFormatPlayTime } from '@/utils';
 
 const mainStore = useMainStore();
 
+const playRef = ref();
+
 const state = reactive({
-  cacheProgress: 50,
-  playProgress: 30,
-  playMin: 0,
-  playMax: 100,
+  cacheProgress: 0,
+  playProgress: 0,
   hasLiked: true
 });
 
 // 当前歌曲
 const curSong = computed(() => {
   return mainStore.getCurrentSong();
+});
+
+// 播放进度
+const playedTime = computed(() => {
+  return getFormatPlayTime(state.playProgress);
 });
 
 // 播放与暂停
@@ -133,9 +146,10 @@ const handleUpDownSong = (isUp: boolean) => {
     index--;
   } else {
     // 下一曲
-    if (index < list.length - 1) {
-      index++;
+    if (index >= list.length - 1) {
+      return;
     }
+    index++;
   }
   mainStore.setIsPlaying(false);
   mainStore.setCurrentSong(list[index]);
@@ -144,7 +158,23 @@ const handleUpDownSong = (isUp: boolean) => {
 
 // 播放进度改变
 const handlePlayProgressChange = (val: number) => {
-  console.log(val);
+  playRef.value?.handleSetCurrentTime(val);
+};
+
+// 缓冲进度改变
+const handleBufferChange = (progress: number) => {
+  state.cacheProgress = progress;
+};
+
+// 播放时间改变
+const handleCurrentTimeChange = (current: number) => {
+  state.playProgress = current;
+};
+
+// 播放结束
+const handlePlayEnd = () => {
+  // 根据规则播放下一曲
+  handleUpDownSong(false);
 };
 </script>
 

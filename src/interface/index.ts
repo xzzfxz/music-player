@@ -30,6 +30,7 @@ export interface SongInfo {
   name: string;
   path: string;
   time?: string;
+  duration?: number;
   mv?: boolean;
   album?: string;
   online?: boolean;
