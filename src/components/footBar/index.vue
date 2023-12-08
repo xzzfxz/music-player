@@ -98,7 +98,7 @@
       </div>
       <div class="icon-container">
         <i class="ri-play-list-2-line"></i>
-        <span class="play-num">876</span>
+        <span class="play-num">{{ mainStore.getPlayList().length }}</span>
       </div>
     </div>
   </div>
@@ -122,6 +122,7 @@ import Play from './component/play.vue';
 import useMainStore from '@/store';
 import emitter from '@/utils/eventHub';
 import { getFormatPlayTime } from '@/utils';
+import { getUpDownSong } from '@/utils/play';
 
 const mainStore = useMainStore();
 
@@ -151,23 +152,12 @@ const handlePlayPause = () => {
 
 // 上一曲------下一曲
 const handleUpDownSong = (isUp: boolean) => {
-  const list = mainStore.getPlayList();
-  let index = list.findIndex(item => item.id === curSong.value.id);
-  if (isUp) {
-    // 上一曲
-    if (index < 1) {
-      return;
-    }
-    index--;
-  } else {
-    // 下一曲
-    if (index >= list.length - 1) {
-      return;
-    }
-    index++;
+  const next = getUpDownSong(isUp);
+  if (!next) {
+    return;
   }
   mainStore.setIsPlaying(false);
-  mainStore.setCurrentSong(list[index]);
+  mainStore.setCurrentSong(next);
   emitter.emit('music.play', true);
 };
 
@@ -196,7 +186,6 @@ const handlePlayEnd = () => {
 watch(
   () => state.volume,
   val => {
-    console.log('$$$$$$$$$', val);
     mainStore.setVolume(val);
     playRef.value.handleSetVolume();
   }

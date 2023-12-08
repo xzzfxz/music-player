@@ -6,6 +6,7 @@
       preload="auto"
       @ended="handlePlayEnd"
       @progress="handleCacheProgress"
+      @error="handlePlayError"
     ></audio>
   </div>
 </template>
@@ -18,6 +19,7 @@ import { onBeforeUnmount, onMounted, reactive, ref, nextTick } from 'vue';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
 import { exists } from '@tauri-apps/api/fs';
 import { ElMessage } from 'element-plus';
+import { getUpDownSong } from '@/utils/play';
 
 const emit = defineEmits(['currentTimeChange', 'bufferChange', 'playEnd']);
 
@@ -109,6 +111,21 @@ const handleCacheProgress = () => {
 const handlePlayEnd = () => {
   handlePause();
   emit('playEnd');
+};
+
+// 播放出现错误，跳过当前播放下一首
+const handlePlayError = () => {
+  if (!state.src) {
+    return;
+  }
+  ElMessage.error('播放错误');
+  const next = getUpDownSong(false);
+  if (!next) {
+    return;
+  }
+  mainStore.setIsPlaying(false);
+  mainStore.setCurrentSong(next);
+  handleMusicPlay(true);
 };
 
 // 设置播放进度
