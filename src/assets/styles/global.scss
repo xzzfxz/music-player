@@ -41,3 +41,11 @@
     }
   }
 }
+
+.el-dropdown {
+  display: inherit;
+  font-size: inherit;
+  .el-tooltip__trigger {
+    outline: none;
+  }
+}

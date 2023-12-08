@@ -80,7 +80,21 @@
         <i class="ri-order-play-line"></i>
       </div>
       <div class="icon-container">
-        <i class="ri-volume-up-line"></i>
+        <el-popover
+          placement="top"
+          trigger="hover"
+          popper-class="volume-popper"
+        >
+          <template #reference>
+            <div><i class="ri-volume-up-line"></i></div>
+          </template>
+          <el-slider
+            v-model="state.volume"
+            size="small"
+            vertical
+            height="120px"
+          />
+        </el-popover>
       </div>
       <div class="icon-container">
         <i class="ri-play-list-2-line"></i>
@@ -101,7 +115,7 @@ import toUpImg from '@/assets/imgs/toUp.png';
 import toDownImg from '@/assets/imgs/toDown.png';
 import toPlayImg from '@/assets/imgs/toPlay.png';
 import toPauseImg from '@/assets/imgs/toPause.png';
-import { computed, reactive, ref } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import SoundQuality from './component/soundQuality.vue';
 import TextScroll from '@/components/TextScroll/index.vue';
 import Play from './component/play.vue';
@@ -116,7 +130,8 @@ const playRef = ref();
 const state = reactive({
   cacheProgress: 0,
   playProgress: 0,
-  hasLiked: true
+  hasLiked: true,
+  volume: mainStore.volume
 });
 
 // 当前歌曲
@@ -176,6 +191,16 @@ const handlePlayEnd = () => {
   // 根据规则播放下一曲
   handleUpDownSong(false);
 };
+
+// 音量改变，及时调整音量
+watch(
+  () => state.volume,
+  val => {
+    console.log('$$$$$$$$$', val);
+    mainStore.setVolume(val);
+    playRef.value.handleSetVolume();
+  }
+);
 </script>
 
 <style lang="scss" scoped>
@@ -296,5 +321,36 @@ const handlePlayEnd = () => {
 }
 .play-num {
   font-size: 16px;
+}
+</style>
+<style lang="scss">
+.volume-popper {
+  &.el-popper {
+    min-width: 0;
+    width: fit-content !important;
+    padding: 8px 0 4px;
+    $sliderWidth: 3px;
+    .el-slider {
+      &.is-vertical {
+        .el-slider__runway {
+          width: $sliderWidth;
+        }
+        $markWidth: 11px;
+        .el-slider__button-wrapper {
+          width: $markWidth;
+          height: $markWidth;
+          left: -4px;
+          .el-slider__button {
+            width: $markWidth;
+            height: $markWidth;
+            background-color: $primaryColor;
+          }
+        }
+        .el-slider__bar {
+          width: $sliderWidth;
+        }
+      }
+    }
+  }
 }
 </style>

@@ -116,7 +116,12 @@ const handleSetCurrentTime = (currentTime: number) => {
   audioRef.value.currentTime = currentTime;
 };
 
-defineExpose({ handleSetCurrentTime });
+// 设置音量
+const handleSetVolume = () => {
+  audioRef.value.volume = mainStore.volume / 100;
+};
+
+defineExpose({ handleSetCurrentTime, handleSetVolume });
 
 // 初始化事件
 const initEvent = () => {
@@ -130,6 +135,7 @@ const offEvent = () => {
 };
 
 onMounted(() => {
+  handleSetVolume();
   initEvent();
 });
 

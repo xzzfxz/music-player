@@ -9,12 +9,14 @@ export const useMainStore = defineStore('main', {
       // 当前播放的歌曲
       currentSong: undefined as unknown as SongInfo,
       // 播放列表
-      playList: [] as SongInfo[]
+      playList: [] as SongInfo[],
+      // 音量
+      volume: 100
     };
   },
   persist: {
     storage: localStorage,
-    paths: ['currentSong', 'playList']
+    paths: ['currentSong', 'playList', 'volume']
   },
   actions: {
     /**
@@ -46,6 +48,14 @@ export const useMainStore = defineStore('main', {
     },
     getPlayList() {
       return [...this.playList];
+    },
+    /**
+     * @description: 设置音量
+     * @param {number} volume 音量大小，0-100
+     * @return {*}
+     */
+    setVolume(volume: number) {
+      this.volume = volume;
     }
   }
 });

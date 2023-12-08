@@ -31,7 +31,11 @@
               ></i>
               <i v-else class="ri-heart-3-line" title="喜欢"></i>
             </div>
-            <div class="icon-container click-active" title="下载">
+            <div
+              v-if="row.online"
+              class="icon-container click-active"
+              title="下载"
+            >
               <i class="ri-download-2-line"></i>
             </div>
             <div class="icon-container click-active" title="更多">
@@ -170,13 +174,6 @@ defineExpose({ handlePlay });
         font-size: 18px;
       }
     }
-  }
-}
-.el-dropdown {
-  display: inherit;
-  font-size: inherit;
-  .el-tooltip__trigger {
-    outline: none;
   }
 }
 </style>
