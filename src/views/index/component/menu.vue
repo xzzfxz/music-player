@@ -32,13 +32,14 @@
 <script setup lang="ts">
 import MenuItem from '@/components/menuItem/index.vue';
 import { MenuCategory, MenuChild } from '@/interface';
-import { shallowReactive } from 'vue';
-import { useRouter } from 'vue-router';
+import { shallowReactive, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 const router = useRouter();
+const route = useRoute();
 
 const state = shallowReactive({
-  selectedItem: 'local',
+  selectedItem: 'localMusic',
   onlineMenu: {
     title: '在线音乐',
     showFeedback: true,
@@ -54,13 +55,7 @@ const state = shallowReactive({
   myMusicMenu: {
     title: '我的音乐',
     menuList: [
-      {
-        id: 'privateCloudDisk',
-        name: '私人音乐云盘',
-        icon: 'ri-cloudy-2-line'
-      },
       { id: 'download', name: '下载管理', icon: 'ri-download-2-line' },
-      { id: 'iTunes', name: 'iTunes音乐', icon: 'ri-music-2-line' },
       { id: 'localMusic', name: '本地音乐', icon: 'ri-computer-line' }
     ]
   } as MenuCategory,
@@ -68,8 +63,7 @@ const state = shallowReactive({
     title: '我喜欢',
     menuList: [
       { id: 'iLike', name: '我喜欢', icon: 'ri-heart-3-line', color: 'red' },
-      { id: 'defaultCollect', name: '默认收藏', icon: 'ri-file-copy-2-line' },
-      { id: 'defaultList', name: '默认列表' }
+      { id: 'defaultCollect', name: '默认收藏', icon: 'ri-file-copy-2-line' }
     ]
   } as MenuCategory,
   collectMenu: {
@@ -86,6 +80,17 @@ const handleMenuChange = (menuItem: MenuChild) => {
   state.selectedItem = menuItem.id;
   router.push({ name: menuItem.id });
 };
+
+// 初始化菜单选中项
+watch(
+  () => route.name,
+  name => {
+    state.selectedItem = name as string;
+  },
+  {
+    immediate: true
+  }
+);
 </script>
 
 <style lang="scss" scoped>
