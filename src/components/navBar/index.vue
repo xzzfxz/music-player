@@ -8,7 +8,7 @@
         <div class="icon-container click-active">
           <i class="ri-arrow-right-s-line"></i>
         </div>
-        <div class="icon-container click-active refresh">
+        <div class="icon-container click-active refresh" @click="handleRefresh">
           <i class="ri-refresh-line"></i>
         </div>
         <div class="search-container flex">
@@ -21,6 +21,12 @@
 
 <script setup lang="ts">
 import Search from './components/search.vue';
+import emitter from '@/utils/eventHub';
+
+// 刷新
+const handleRefresh = () => {
+  emitter.emit('router.reload');
+};
 </script>
 
 <style lang="scss" scoped>

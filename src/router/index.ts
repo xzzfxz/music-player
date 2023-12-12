@@ -25,6 +25,11 @@ const routes: RouteRecordRaw[] = [
             path: 'iLike',
             name: 'iLike',
             component: () => import('@/views/like/index.vue')
+          },
+          {
+            path: 'searchResult',
+            name: 'searchResult',
+            component: () => import('@/views/search/index.vue')
           }
         ]
       }

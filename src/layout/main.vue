@@ -3,7 +3,7 @@
     <div class="nav-container no-shrink">
       <NavBar />
     </div>
-    <div class="main-router-container">
+    <div class="main-router-container" v-if="reload">
       <RouterView />
     </div>
     <div class="footer-container no-shrink">
@@ -16,6 +16,26 @@
 import { RouterView } from 'vue-router';
 import NavBar from '@/components/navBar/index.vue';
 import FootBar from '@/components/footBar/index.vue';
+import { onMounted, ref, nextTick, onBeforeUnmount } from 'vue';
+import emitter from '@/utils/eventHub';
+
+const reload = ref(true);
+
+// 刷新当前路由
+const handleReload = () => {
+  reload.value = false;
+  nextTick(() => {
+    reload.value = true;
+  });
+};
+
+onMounted(() => {
+  emitter.on('router.reload', handleReload);
+});
+
+onBeforeUnmount(() => {
+  emitter.off('router.reload', handleReload);
+});
 </script>
 
 <style lang="scss" scoped>

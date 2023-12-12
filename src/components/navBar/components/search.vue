@@ -3,7 +3,7 @@
     <el-dropdown
       trigger="click"
       placement="bottom-start"
-      popper-class="history-popper"
+      :popper-class="popperClass"
     >
       <div>
         <el-autocomplete
@@ -18,7 +18,7 @@
           <template #prefix><i class="ri-search-line"></i></template>
         </el-autocomplete>
       </div>
-      <template #dropdown v-if="!state.filter && state.historyList.length">
+      <template #dropdown>
         <el-dropdown-menu>
           <el-dropdown-item
             v-for="(item, index) in state.historyList"
@@ -44,12 +44,15 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import { invoke } from '@tauri-apps/api';
+import { useRouter } from 'vue-router';
 
 interface HistoryItem {
   value: string;
 }
+
+const router = useRouter();
 
 const HISTORY_NAME = 'searchHistory';
 
@@ -60,12 +63,22 @@ const state = reactive({
   historyList: [] as HistoryItem[]
 });
 
+// 格式化下拉菜单的类名
+const popperClass = computed(() => {
+  let str = 'history-popper';
+  if (state.filter) {
+    str += ' history-hide';
+  }
+  return str;
+});
+
 // 搜索
 const querySearch = (input: string, cb: any) => {
   if (!input) {
     cb([]);
   } else {
     // 远程搜索
+    console.log(encodeURI(input), encodeURIComponent(input));
     invoke('search_song', { keyword: input });
     cb([]);
   }
@@ -99,6 +112,7 @@ const addToHistory = (value: string) => {
 // 按下enter键，保存历史
 const handleEnter = () => {
   addToHistory(state.filter);
+  router.push({ path: '/searchResult', query: { keyword: state.filter } });
 };
 
 // 选中历史
@@ -155,6 +169,9 @@ initData();
 </style>
 <style lang="scss">
 .history-popper {
+  &.history-hide {
+    display: none;
+  }
   .history-item {
     width: 176px;
     justify-content: space-between;

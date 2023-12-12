@@ -1,59 +1,47 @@
-use std::collections::HashMap;
+mod song_struct;
 
 use anyhow::Result;
-use serde::{Deserialize, Serialize};
-use strum_macros::Display;
+use std::collections::HashMap;
 
-#[derive(Deserialize, Serialize, Debug)]
-struct DataSong {
-    title: String,
-    author: String,
-    link: String,
-    lrc: String,
-    pic: String,
-    songid: u32,
-    url: String,
-    r#type: String,
-}
+// pub async fn search_song(keyword: String) -> Result<()> {
+//     println!("搜索的关键词: {}", keyword);
+//     let client = reqwest::Client::new();
+//     let mut form_params = HashMap::new();
+//     form_params.insert("input", keyword);
+//     form_params.insert("filter", "name".to_string());
+//     form_params.insert("type", SearchType::WangYi.to_string());
+//     form_params.insert("page", "1".to_string());
+//     let res = client
+//         .post("https://music.liuzhijin.cn")
+//         .header("X-Requested-With", "XMLHttpRequest")
+//         .form(&form_params)
+//         .send()
+//         .await?;
+//     if res.status().is_success() {
+//         let body = res.json::<ResultSong>().await?;
+//         println!("请求的结果: {:#?}", body);
+//     }
+//     Ok(())
+// }
 
-#[derive(Deserialize, Serialize, Debug)]
-struct ResultSong {
-    code: u32,
-    error: String,
-    data: Vec<DataSong>,
-}
-
-#[derive(Display)]
-enum SearchType {
-    #[strum(serialize = "netease")]
-    WangYi,
-    #[strum(serialize = "qq")]
-    QQ,
-    #[strum(serialize = "kugou")]
-    KuGou,
-    #[strum(serialize = "kuwo")]
-    KuWo,
-    #[strum(serialize = "baidu")]
-    BaiDu,
-}
-
+/**
+ * @description: 酷狗搜索
+ * @param {String} keyword 关键词
+ * @return {*}
+ */
 pub async fn search_song(keyword: String) -> Result<()> {
     println!("搜索的关键词: {}", keyword);
     let client = reqwest::Client::new();
-    let mut form_params = HashMap::new();
-    form_params.insert("input", keyword);
-    form_params.insert("filter", "name".to_string());
-    form_params.insert("type", SearchType::WangYi.to_string());
-    form_params.insert("page", "1".to_string());
-    let res = client
-        .post("https://music.liuzhijin.cn")
-        .header("X-Requested-With", "XMLHttpRequest")
-        .form(&form_params)
-        .send()
-        .await?;
+    let url = format!(
+        "http://searchtip.kugou.com/getSearchTip?keyword={}",
+        keyword
+    );
+    let res = client.get(url).send().await?;
     if res.status().is_success() {
-        let body = res.json::<ResultSong>().await?;
+        let body = res.text().await?;
         println!("请求的结果: {:#?}", body);
+    } else {
+        println!("失败的结果: {:#?}", res);
     }
     Ok(())
 }
