@@ -4,6 +4,7 @@ pub use super::song::SongInfo;
 pub mod outer_apis {
 
     use crate::file;
+    use crate::network;
     use crate::window::CurrentWindow;
     use tauri::Window;
 
@@ -63,6 +64,17 @@ pub mod outer_apis {
     #[tauri::command]
     pub async fn open_folder(file_path: String) -> bool {
         file::deal_file::open_folder(file_path);
+        true
+    }
+
+    /**
+     * @description: 搜索歌曲
+     * @param {String} keyword 关键词
+     * @return {*}
+     */
+    #[tauri::command]
+    pub async fn search_song(keyword: String) -> bool {
+        let _ = network::search_song(keyword).await;
         true
     }
 }

@@ -1,8 +1,13 @@
 <template>
   <div class="search-container-com">
-    <el-dropdown trigger="click" placement="bottom-start">
+    <el-dropdown
+      trigger="click"
+      placement="bottom-start"
+      popper-class="history-popper"
+    >
       <div>
         <el-autocomplete
+          ref="autoRef"
           v-model="state.filter"
           clearable
           size="small"
@@ -19,8 +24,14 @@
             v-for="(item, index) in state.historyList"
             :key="item"
           >
-            <div class="history-item" @click="deleteFromHistory(index)">
-              Action 1
+            <div class="history-item flex" @click="handleSelectHistory(item)">
+              <div class="history-name ellipsis">{{ item.value }}</div>
+              <div
+                class="history-clear no-shrink click-active"
+                @click.stop="deleteFromHistory(index)"
+              >
+                <i class="ri-close-fill"></i>
+              </div>
             </div>
           </el-dropdown-item>
           <el-dropdown-item divided>
@@ -33,13 +44,16 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
+import { invoke } from '@tauri-apps/api';
 
 interface HistoryItem {
   value: string;
 }
 
 const HISTORY_NAME = 'searchHistory';
+
+const autoRef = ref();
 
 const state = reactive({
   filter: '',
@@ -52,6 +66,7 @@ const querySearch = (input: string, cb: any) => {
     cb([]);
   } else {
     // 远程搜索
+    invoke('search_song', { keyword: input });
     cb([]);
   }
 };
@@ -84,6 +99,12 @@ const addToHistory = (value: string) => {
 // 按下enter键，保存历史
 const handleEnter = () => {
   addToHistory(state.filter);
+};
+
+// 选中历史
+const handleSelectHistory = (current: HistoryItem) => {
+  state.filter = current.value;
+  autoRef.value?.focus();
 };
 
 // 选中输入项
@@ -128,6 +149,17 @@ initData();
         box-shadow: none;
         outline: none;
       }
+    }
+  }
+}
+</style>
+<style lang="scss">
+.history-popper {
+  .history-item {
+    width: 176px;
+    justify-content: space-between;
+    .history-name {
+      flex-grow: 1;
     }
   }
 }

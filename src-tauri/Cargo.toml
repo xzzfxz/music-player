@@ -26,6 +26,8 @@ strum_macros = "0.25.3"
 anyhow = "1.0.75"
 thiserror = "1.0.50"
 tokio = "1.34.0"
+reqwest = {version = "0.11.22", features = ["json"]}
+encoding = "0.2.33"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

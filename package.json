@@ -12,6 +12,7 @@
   "dependencies": {
     "@tauri-apps/api": "^1.5.1",
     "@types/node": "^20.9.0",
+    "axios": "^1.6.2",
     "element-plus": "^2.4.2",
     "mitt": "^3.0.1",
     "pinia": "^2.1.7",
