@@ -1,45 +1,34 @@
 <template>
   <div class="search-container-com">
-    <el-dropdown
-      trigger="click"
+    <el-autocomplete
+      ref="autoRef"
+      v-model="state.filter"
+      clearable
+      size="small"
       placement="bottom-start"
-      :popper-class="popperClass"
+      fit-input-width
+      popper-class="history-popper"
+      :trigger-on-focus="true"
+      :fetch-suggestions="querySearch"
+      @select="handleSelect"
+      @keydown.enter.stop="handleEnter"
     >
-      <div>
-        <el-autocomplete
-          ref="autoRef"
-          v-model="state.filter"
-          clearable
-          size="small"
-          :fetch-suggestions="querySearch"
-          @select="handleSelect"
-          @keydown.enter.stop="handleEnter"
-        >
-          <template #prefix><i class="ri-search-line"></i></template>
-        </el-autocomplete>
-      </div>
-      <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item
-            v-for="(item, index) in state.historyList"
-            :key="item"
+      <template #prefix><i class="ri-search-line"></i></template>
+      <template #default="{ item }">
+        <div class="history-item flex">
+          <div class="history-name ellipsis" :class="{ all: item.clearAll }">
+            {{ item.value }}
+          </div>
+          <div
+            v-if="item.isHistory"
+            class="history-clear no-shrink click-active"
+            @click.stop="deleteFromHistory(item.value)"
           >
-            <div class="history-item flex" @click="handleSelectHistory(item)">
-              <div class="history-name ellipsis">{{ item.value }}</div>
-              <div
-                class="history-clear no-shrink click-active"
-                @click.stop="deleteFromHistory(index)"
-              >
-                <i class="ri-close-fill"></i>
-              </div>
-            </div>
-          </el-dropdown-item>
-          <el-dropdown-item divided>
-            <div @click="handleClearHistory">清空历史</div>
-          </el-dropdown-item>
-        </el-dropdown-menu>
+            <i class="ri-close-fill"></i>
+          </div>
+        </div>
       </template>
-    </el-dropdown>
+    </el-autocomplete>
   </div>
 </template>
 
@@ -50,6 +39,8 @@ import { useRouter } from 'vue-router';
 
 interface HistoryItem {
   value: string;
+  isHistory?: boolean;
+  clearAll?: boolean;
 }
 
 const router = useRouter();
@@ -60,28 +51,47 @@ const autoRef = ref();
 
 const state = reactive({
   filter: '',
-  historyList: [] as HistoryItem[]
+  lastFilter: '',
+  historyList: [] as HistoryItem[],
+  suggestionList: [] as HistoryItem[]
 });
 
-// 格式化下拉菜单的类名
-const popperClass = computed(() => {
-  let str = 'history-popper';
-  if (state.filter) {
-    str += ' history-hide';
+const localHistoryList = computed(() => {
+  if (!state.historyList.length) {
+    return [];
   }
-  return str;
+  return [...state.historyList, { value: '清空历史', clearAll: true }];
 });
 
 // 搜索
-const querySearch = (input: string, cb: any) => {
+const querySearch = async (input: string, cb: any) => {
   if (!input) {
-    cb([]);
-  } else {
-    // 远程搜索
-    console.log(encodeURI(input), encodeURIComponent(input));
-    invoke('search_song', { keyword: input });
-    cb([]);
+    cb(localHistoryList.value);
+    return;
   }
+  if (input === state.lastFilter && state.suggestionList.length) {
+    cb(state.suggestionList);
+    return;
+  }
+  // 远程搜索
+  const res: string = await invoke('search_tips', { keyword: input });
+  if (!res) {
+    cb([]);
+    return;
+  }
+  const json = JSON.parse(res);
+  const listSet: Set<string> = new Set();
+  json.data.forEach((item: any) => {
+    const list = item.RecordDatas || [];
+    list.forEach((it: any) => {
+      listSet.add(it.HintInfo);
+    });
+  });
+  state.suggestionList = [...listSet].map((item: string) => {
+    return { value: item };
+  });
+  state.lastFilter = input;
+  cb(state.suggestionList);
 };
 
 // 清空历史
@@ -91,40 +101,40 @@ const handleClearHistory = () => {
 };
 
 // 删除历史记录
-const deleteFromHistory = (index: number) => {
+const deleteFromHistory = (current: string) => {
+  const index = state.historyList.findIndex(
+    (item: HistoryItem) => item.value === current
+  );
+  if (index === -1) {
+    return;
+  }
   state.historyList.splice(index, 1);
   localStorage.setItem(HISTORY_NAME, JSON.stringify(state.historyList));
 };
 
 // 添加历史记录
 const addToHistory = (value: string) => {
-  const index = state.historyList.findIndex(
-    (item: HistoryItem) => item.value === value
-  );
-  if (index !== -1) {
-    // 先删除
-    state.historyList.splice(index, 1);
-  }
-  state.historyList.unshift({ value });
+  deleteFromHistory(value);
+  state.historyList.unshift({ value, isHistory: true });
   localStorage.setItem(HISTORY_NAME, JSON.stringify(state.historyList));
 };
 
 // 按下enter键，保存历史
 const handleEnter = () => {
+  autoRef.value?.blur();
   addToHistory(state.filter);
   router.push({ path: '/searchResult', query: { keyword: state.filter } });
 };
 
-// 选中历史
-const handleSelectHistory = (current: HistoryItem) => {
-  state.filter = current.value;
-  autoRef.value?.focus();
-};
-
 // 选中输入项
-const handleSelect = (current: any) => {
-  console.log(current);
-  addToHistory(state.filter);
+const handleSelect = (current: HistoryItem) => {
+  if (current.clearAll) {
+    // 清空历史
+    handleClearHistory();
+    return;
+  }
+  state.lastFilter = current.value;
+  handleEnter();
 };
 
 // 进入页面时，初始化搜索历史
@@ -169,14 +179,19 @@ initData();
 </style>
 <style lang="scss">
 .history-popper {
-  &.history-hide {
-    display: none;
-  }
   .history-item {
     width: 176px;
     justify-content: space-between;
     .history-name {
       flex-grow: 1;
+      &.all {
+        color: $primaryColor;
+      }
+    }
+    .history-clear {
+      &:hover {
+        color: $primaryColor;
+      }
     }
   }
 }

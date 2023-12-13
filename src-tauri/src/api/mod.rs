@@ -68,13 +68,18 @@ pub mod outer_apis {
     }
 
     /**
-     * @description: 搜索歌曲
+     * @description: 搜索提示
      * @param {String} keyword 关键词
      * @return {*}
      */
     #[tauri::command]
-    pub async fn search_song(keyword: String) -> bool {
-        let _ = network::search_song(keyword).await;
-        true
+    pub async fn search_tips(keyword: String) -> String {
+        match network::search_tips(keyword).await {
+            Ok(body) => body,
+            Err(info) => {
+                println!("搜索提示请求错误: {:?}", info);
+                "".to_string()
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
+mod kugo;
 mod song_struct;
 
-use anyhow::Result;
+use anyhow::{Ok, Result};
 use std::collections::HashMap;
 
 // pub async fn search_song(keyword: String) -> Result<()> {
@@ -25,12 +26,11 @@ use std::collections::HashMap;
 // }
 
 /**
- * @description: 酷狗搜索
+ * @description: 酷狗搜索提示
  * @param {String} keyword 关键词
  * @return {*}
  */
-pub async fn search_song(keyword: String) -> Result<()> {
-    println!("搜索的关键词: {}", keyword);
+pub async fn search_tips(keyword: String) -> Result<String> {
     let client = reqwest::Client::new();
     let url = format!(
         "http://searchtip.kugou.com/getSearchTip?keyword={}",
@@ -40,8 +40,8 @@ pub async fn search_song(keyword: String) -> Result<()> {
     if res.status().is_success() {
         let body = res.text().await?;
         println!("请求的结果: {:#?}", body);
+        Ok(body)
     } else {
-        println!("失败的结果: {:#?}", res);
+        Ok("".to_string())
     }
-    Ok(())
 }
