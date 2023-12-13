@@ -33,3 +33,18 @@ pub enum SearchType {
     #[strum(serialize = "baidu")]
     BaiDu,
 }
+
+// 搜索类型
+#[derive(Display, Deserialize, Serialize)]
+pub enum ChannelType {
+    #[strum(serialize = "kuGou")]
+    KuGou,
+    #[strum(serialize = "wangYi")]
+    WangYi,
+    #[strum(serialize = "qq")]
+    QQ,
+    #[strum(serialize = "kuWo")]
+    KuWo,
+    #[strum(serialize = "baiDu")]
+    BaiDu,
+}

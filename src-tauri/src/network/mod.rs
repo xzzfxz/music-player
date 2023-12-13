@@ -1,8 +1,9 @@
-mod kugo;
-mod song_struct;
+mod kugou;
+pub mod song_struct;
 
 use anyhow::{Ok, Result};
-use std::collections::HashMap;
+
+use crate::network::song_struct::ChannelType;
 
 // pub async fn search_song(keyword: String) -> Result<()> {
 //     println!("搜索的关键词: {}", keyword);
@@ -39,9 +40,23 @@ pub async fn search_tips(keyword: String) -> Result<String> {
     let res = client.get(url).send().await?;
     if res.status().is_success() {
         let body = res.text().await?;
-        println!("请求的结果: {:#?}", body);
         Ok(body)
     } else {
         Ok("".to_string())
     }
+}
+
+/**
+ * @description: 在线搜索歌曲
+ * @param {String} keyword 关键词
+ * @param {network} channel 渠道
+ * @return {*}
+ */
+pub async fn search_songs(keyword: String, channel: ChannelType) -> Result<String> {
+    println!("keyword是{}", keyword);
+    let res = match channel {
+        ChannelType::KuGou => kugou::search_songs(keyword).await?,
+        _ => "".to_string(),
+    };
+    Ok(res)
 }

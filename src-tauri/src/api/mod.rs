@@ -82,4 +82,24 @@ pub mod outer_apis {
             }
         }
     }
+
+    /**
+     * @description: 在线搜索歌曲
+     * @param {String} keyword 关键词
+     * @param {String} channel 渠道
+     * @return {*}
+     */
+    #[tauri::command]
+    pub async fn search_songs(
+        keyword: String,
+        channel: network::song_struct::ChannelType,
+    ) -> String {
+        match network::search_songs(keyword, channel).await {
+            Ok(res) => res,
+            Err(info) => {
+                println!("搜索提示请求错误: {:?}", info);
+                "".to_string()
+            }
+        }
+    }
 }

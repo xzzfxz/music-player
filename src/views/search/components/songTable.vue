@@ -9,10 +9,13 @@
   >
     <el-table-column prop="name" label="歌曲名" width="390">
       <template #default="{ row }">
-        <div class="song-container flex">
+        <div class="song-container search-result-match flex">
           <div class="left-container flex">
-            <div class="title ellipsis">{{ row.name }}</div>
-            <div class="mv no-shrink flex-center click-active" v-if="row.mv">
+            <div class="title ellipsis" v-html="row.SongName"></div>
+            <div
+              class="mv no-shrink flex-center click-active"
+              v-if="row.mvdata?.length"
+            >
               MV
             </div>
             <div
@@ -51,18 +54,28 @@
     </el-table-column>
     <el-table-column prop="empty"></el-table-column>
     <el-table-column
-      prop="singer"
+      prop="SingerName"
       label="歌手"
       show-overflow-tooltip
       width="100"
-    />
+    >
+      <template #default="{ row }">
+        <div class="search-result-match">
+          <div v-html="row.SingerName"></div>
+        </div>
+      </template>
+    </el-table-column>
     <el-table-column
-      prop="time"
+      prop="Duration"
       label="时间"
       :align="'right'"
       show-overflow-tooltip
       width="80"
-    />
+    >
+      <template #default="{ row }">
+        <span>{{ getFormatPlayTime(row.Duration) }}</span>
+      </template>
+    </el-table-column>
   </el-table>
 </template>
 
@@ -70,11 +83,11 @@
 import { SongInfo } from '@/interface';
 import { PropType, computed } from 'vue';
 import useMainStore from '@/store';
-import emitter from '@/utils/eventHub';
+import { getFormatPlayTime } from '@/utils';
 
 const props = defineProps({
   list: {
-    type: Array as PropType<SongInfo[]>,
+    type: Array as PropType<any[]>,
     default: () => []
   }
 });
@@ -90,9 +103,17 @@ const curSong = computed(() => {
 });
 
 // 播放
-const handlePlay = (songInfo: SongInfo) => {
-  mainStore.setCurrentSong(songInfo);
-  emitter.emit('music.play', true);
+const handlePlay = (songInfo: any) => {
+  console.log(songInfo);
+  // const params = {
+  //   cmd: '',
+  //   pid: '',
+  //   authType: '',
+  //   hash: songInfo.FileHash,
+  //   key: ''
+  // };
+  // mainStore.setCurrentSong(songInfo);
+  // emitter.emit('music.play', true);
 };
 
 defineExpose({ handlePlay });
@@ -146,6 +167,11 @@ defineExpose({ handlePlay });
         border-bottom: none;
       }
     }
+  }
+}
+.search-result-match {
+  em {
+    color: $primaryColor;
   }
 }
 </style>

@@ -6,8 +6,8 @@
   </div>
   <div class="tab-container">
     <el-tabs v-model="state.activeName">
-      <el-tab-pane label="单曲" name="song">
-        <SongTable />
+      <el-tab-pane label="酷狗" name="kuGou">
+        <KuGou :keyword="state.keyword" v-if="state.keyword" />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -16,26 +16,19 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
 import { useRoute } from 'vue-router';
-import SongTable from './components/songTable.vue';
-import { invoke } from '@tauri-apps/api';
+import KuGou from './components/kuGou.vue';
 
 const route = useRoute();
 
 const state = reactive({
   keyword: '',
-  activeName: 'song'
+  activeName: 'kuGou'
 });
-
-// 查询列表
-const getTableData = () => {
-  invoke('search_song', { keyword: state.keyword });
-};
 
 // 初始化查询数据
 const initQuery = () => {
   const query = route.query || {};
   state.keyword = (query.keyword as string) || '';
-  getTableData();
 };
 initQuery();
 </script>

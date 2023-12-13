@@ -34,4 +34,5 @@ export interface SongInfo {
   mv?: boolean;
   album?: string;
   online?: boolean;
+  [key: string]: any;
 }
