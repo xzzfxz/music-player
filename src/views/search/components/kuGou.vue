@@ -6,6 +6,8 @@
 import { reactive } from 'vue';
 import SongTable from './songTable.vue';
 import { invoke } from '@tauri-apps/api';
+import { CHANNEL_TYPE } from '@/enum';
+import { EventName } from '@/const/event';
 
 const props = defineProps({
   keyword: {
@@ -20,15 +22,17 @@ const state = reactive({
 
 // 查询列表
 const getTableData = () => {
-  invoke('search_songs', { keyword: props.keyword, channel: 'KuGou' }).then(
-    (res: any) => {
-      if (!res) {
-        return;
-      }
-      const json = JSON.parse(res);
-      state.list = json.data.lists || [];
+  invoke(EventName.SEARCH_SONGS, {
+    keyword: props.keyword,
+    channel: CHANNEL_TYPE.KU_GOU
+  }).then((res: any) => {
+    if (!res) {
+      return;
     }
-  );
+    const json = JSON.parse(res);
+    console.log(json);
+    state.list = json.data.lists || [];
+  });
 };
 
 getTableData();

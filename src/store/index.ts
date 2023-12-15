@@ -46,6 +46,14 @@ export const useMainStore = defineStore('main', {
     setPlayList(list: SongInfo[]) {
       this.playList = [...list];
     },
+    /**
+     * @description: 添加播放列表
+     * @param {SongInfo} list
+     * @return {*}
+     */
+    addPlayList(list: SongInfo[]) {
+      this.playList.push(...list);
+    },
     getPlayList() {
       return [...this.playList];
     },

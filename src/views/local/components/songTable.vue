@@ -87,6 +87,7 @@ import useMainStore from '@/store';
 import emitter from '@/utils/eventHub';
 import { MENU_EVENT } from '@/enum';
 import { invoke } from '@tauri-apps/api';
+import { EventName } from '@/const/event';
 
 const emit = defineEmits(['reloadList']);
 
@@ -120,7 +121,7 @@ const handleCommand = async (command: MENU_EVENT, songInfo: SongInfo) => {
     handlePlay(songInfo);
   } else if ([MENU_EVENT.DELETE, MENU_EVENT.DELETE_FILE].includes(command)) {
     // 从列表中删除
-    const res = await invoke('delete_local_song', {
+    const res = await invoke(EventName.DELETE_LOCAL_SONG, {
       songPath: songInfo.path,
       deleteFile: MENU_EVENT.DELETE_FILE === command
     });
@@ -130,50 +131,11 @@ const handleCommand = async (command: MENU_EVENT, songInfo: SongInfo) => {
     }
   } else if (MENU_EVENT.OPEN_FOLDER === command) {
     // 打开文件夹
-    invoke('open_folder', { filePath: songInfo.path });
+    invoke(EventName.OPEN_FOLDER, { filePath: songInfo.path });
   }
 };
 
 defineExpose({ handlePlay });
 </script>
 
-<style lang="scss" scoped>
-.song-container {
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  .left-container {
-    width: 0;
-    padding-right: 30px;
-    flex-grow: 1;
-    align-items: center;
-    .mv {
-      height: 12px;
-      padding: 0 2px;
-      margin-left: 4px;
-      border: 1px solid $primaryColor;
-      font-size: 10px;
-      color: $primaryColor;
-      line-height: 10px;
-      cursor: pointer;
-    }
-    .playing {
-      margin-left: 4px;
-      font-size: 12px;
-      color: $primaryColor;
-    }
-  }
-  .right-container {
-    align-items: center;
-    .icon-container {
-      margin-left: 18px;
-      font-size: 16px;
-      cursor: pointer;
-      &:first-child {
-        margin-left: 0;
-        font-size: 18px;
-      }
-    }
-  }
-}
-</style>
+<style lang="scss" scoped></style>

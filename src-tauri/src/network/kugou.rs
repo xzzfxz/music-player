@@ -1,9 +1,41 @@
+use reqwest::redirect::Policy;
+use std::time::{SystemTime, UNIX_EPOCH};
+
 use anyhow::Result;
 
 pub async fn search_songs(keyword: String) -> Result<String> {
-    let url = format!("https://complexsearch.kugou.com/v2/search/song?appid=1155&area_code=1&clienttime=1702452399854&clientver=313&dfid=-&iscorrection=7&keyword={}&mid=cbdc97dc723c7ea037cd44522b5c066e&page=1&pagesize=20&platform=WebFilter&requestid=14&signature=d8bdf3b77823a6635821e47fb7f519c9&srcappid=2919&tag=em&token=296259bd43f2743da3f2e8464e23c24c0ef266d1b2b10baf37d8f285e5b14c95&userid=577275546&uuid=5cf7a4b151a470ba03a65dae796fdb4f", keyword);
+    let url = format!(
+        "http://songsearch.kugou.com/song_search_v2?callback=&keyword={}&page=1&pagesize=30&userid=-1&platform=WebFilter&tag=em",
+        keyword
+    );
     let client = reqwest::Client::new();
     let res = client.get(url).send().await?;
+    if res.status().is_success() {
+        let body = res.text().await?;
+        Ok(body)
+    } else {
+        Ok("".to_string())
+    }
+}
+
+/**
+ * @description: 获取音乐播放地址与歌词
+ * @param {String} hash 歌曲hash
+ * @param {String} album_id 专辑id
+ * @return {*}
+ */
+pub async fn get_song_info(hash: String, album_id: String) -> Result<String> {
+    let time = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis();
+    let url = format!(
+        "https://www.kugou.com/yy/index.php?r=play/getdata&hash={}&album_id={}&_={}",
+        hash, album_id, time
+    );
+    let client = reqwest::Client::new();
+    let res = client
+        .get(url)
+        .header(reqwest::header::COOKIE, "kg_mid=2333")
+        .send()
+        .await?;
     if res.status().is_success() {
         let body = res.text().await?;
         Ok(body)

@@ -102,4 +102,19 @@ pub mod outer_apis {
             }
         }
     }
+
+    #[tauri::command]
+    pub async fn get_song_info(
+        hash: String,
+        album_id: String,
+        channel: network::song_struct::ChannelType,
+    ) -> String {
+        match network::get_song_info(hash, album_id, channel).await {
+            Ok(res) => res,
+            Err(info) => {
+                println!("搜索提示请求错误: {:?}", info);
+                "".to_string()
+            }
+        }
+    }
 }

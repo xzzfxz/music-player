@@ -12,3 +12,11 @@ export enum MENU_EVENT {
   // 打开所在文件夹
   OPEN_FOLDER = 'openFolder'
 }
+
+/**
+ * @description: 音乐渠道类型
+ * @return {*}
+ */
+export enum CHANNEL_TYPE {
+  KU_GOU = 'KuGou'
+}

@@ -53,9 +53,17 @@ pub async fn search_tips(keyword: String) -> Result<String> {
  * @return {*}
  */
 pub async fn search_songs(keyword: String, channel: ChannelType) -> Result<String> {
-    println!("keyword是{}", keyword);
     let res = match channel {
         ChannelType::KuGou => kugou::search_songs(keyword).await?,
+        _ => "".to_string(),
+    };
+    Ok(res)
+}
+
+pub async fn get_song_info(hash: String, album_id: String, channel: ChannelType) -> Result<String> {
+    println!("has: {}, albumId: {}", hash, album_id);
+    let res = match channel {
+        ChannelType::KuGou => kugou::get_song_info(hash, album_id).await?,
         _ => "".to_string(),
     };
     Ok(res)

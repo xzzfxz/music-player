@@ -6,7 +6,7 @@
   </div>
   <div class="tab-container">
     <el-tabs v-model="state.activeName">
-      <el-tab-pane label="酷狗" name="kuGou">
+      <el-tab-pane label="酷狗" :name="CHANNEL_TYPE.KU_GOU">
         <KuGou :keyword="state.keyword" v-if="state.keyword" />
       </el-tab-pane>
     </el-tabs>
@@ -17,12 +17,13 @@
 import { reactive } from 'vue';
 import { useRoute } from 'vue-router';
 import KuGou from './components/kuGou.vue';
+import { CHANNEL_TYPE } from '@/enum';
 
 const route = useRoute();
 
 const state = reactive({
   keyword: '',
-  activeName: 'kuGou'
+  activeName: CHANNEL_TYPE.KU_GOU
 });
 
 // 初始化查询数据

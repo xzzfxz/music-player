@@ -1,4 +1,5 @@
 import { MUSIC_EXT } from '@/const';
+import { v4 as uuidV4 } from 'uuid';
 
 /**
  * @description: 根据文件名称获取歌手和歌名
@@ -49,4 +50,12 @@ export const getFormatPlayTime = (time: number) => {
   const sec = (time - hour * 60 * 60 - min * 60) % 60;
   lastTime += formatZero(sec);
   return lastTime;
+};
+
+/**
+ * @description: 生成uuid
+ * @return {*}
+ */
+export const getUUID = () => {
+  return uuidV4();
 };

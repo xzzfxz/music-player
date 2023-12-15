@@ -52,7 +52,6 @@
         </div>
       </template>
     </el-table-column>
-    <el-table-column prop="empty"></el-table-column>
     <el-table-column
       prop="SingerName"
       label="歌手"
@@ -60,9 +59,21 @@
       width="100"
     >
       <template #default="{ row }">
-        <div class="search-result-match">
-          <div v-html="row.SingerName"></div>
-        </div>
+        <span class="search-result-match">
+          <span v-html="row.SingerName"></span>
+        </span>
+      </template>
+    </el-table-column>
+    <el-table-column
+      prop="AlbumName"
+      label="专辑"
+      show-overflow-tooltip
+      width="112"
+    >
+      <template #default="{ row }">
+        <span class="search-result-match" v-if="row.AlbumID">
+          <span v-html="row.AlbumName"></span>
+        </span>
       </template>
     </el-table-column>
     <el-table-column
@@ -83,7 +94,10 @@
 import { SongInfo } from '@/interface';
 import { PropType, computed } from 'vue';
 import useMainStore from '@/store';
-import { getFormatPlayTime } from '@/utils';
+import { getFormatPlayTime, getUUID } from '@/utils';
+import { invoke } from '@tauri-apps/api';
+import { EventName } from '@/const/event';
+import emitter from '@/utils/eventHub';
 
 const props = defineProps({
   list: {
@@ -103,62 +117,39 @@ const curSong = computed(() => {
 });
 
 // 播放
-const handlePlay = (songInfo: any) => {
-  console.log(songInfo);
-  // const params = {
-  //   cmd: '',
-  //   pid: '',
-  //   authType: '',
-  //   hash: songInfo.FileHash,
-  //   key: ''
-  // };
-  // mainStore.setCurrentSong(songInfo);
-  // emitter.emit('music.play', true);
+const handlePlay = async (currentInfo: any) => {
+  const params = {
+    hash: currentInfo.FileHash,
+    albumId: currentInfo.AlbumID,
+    channel: 'KuGou'
+  };
+  const res: string = await invoke(EventName.GET_SONG_INFO, params);
+  if (!res) {
+    return;
+  }
+  const json = JSON.parse(res)?.data;
+  const songInfo: SongInfo = {
+    id: getUUID(),
+    singer: json.author_name,
+    name: json.song_name,
+    path: json.play_url,
+    avatar: json.img,
+    time: getFormatPlayTime(currentInfo.Duration),
+    duration: currentInfo.Duration,
+    mv: json.have_mv,
+    album: currentInfo.AlbumID,
+    online: true,
+    lyrics: json.lyrics
+  };
+  mainStore.setCurrentSong(songInfo);
+  mainStore.addPlayList([songInfo]);
+  emitter.emit('music.play', true);
 };
 
 defineExpose({ handlePlay });
 </script>
 
-<style lang="scss" scoped>
-.song-container {
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  .left-container {
-    width: 0;
-    padding-right: 30px;
-    flex-grow: 1;
-    align-items: center;
-    .mv {
-      height: 12px;
-      padding: 0 2px;
-      margin-left: 4px;
-      border: 1px solid $primaryColor;
-      font-size: 10px;
-      color: $primaryColor;
-      line-height: 10px;
-      cursor: pointer;
-    }
-    .playing {
-      margin-left: 4px;
-      font-size: 12px;
-      color: $primaryColor;
-    }
-  }
-  .right-container {
-    align-items: center;
-    .icon-container {
-      margin-left: 18px;
-      font-size: 16px;
-      cursor: pointer;
-      &:first-child {
-        margin-left: 0;
-        font-size: 18px;
-      }
-    }
-  }
-}
-</style>
+<style lang="scss" scoped></style>
 <style lang="scss">
 .el-table {
   .el-table__cell {
