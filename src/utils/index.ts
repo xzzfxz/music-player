@@ -59,3 +59,15 @@ export const getFormatPlayTime = (time: number) => {
 export const getUUID = () => {
   return uuidV4();
 };
+
+/**
+ * @description: 替换图片链接中的{size}
+ * @param {string} url
+ * @return {*}
+ */
+export const replaceImgSize = (url: string) => {
+  if (!url) {
+    return url;
+  }
+  return url.replace('{size}', '240');
+};

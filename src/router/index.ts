@@ -14,7 +14,7 @@ const routes: RouteRecordRaw[] = [
         path: '/',
         name: 'index',
         component: Index,
-        redirect: 'localMusic',
+        redirect: 'mv',
         children: [
           {
             path: 'localMusic',
@@ -30,6 +30,11 @@ const routes: RouteRecordRaw[] = [
             path: 'searchResult',
             name: 'searchResult',
             component: () => import('@/views/search/index.vue')
+          },
+          {
+            path: 'mv',
+            name: 'mv',
+            component: () => import('@/views/mv/index.vue')
           }
         ]
       }

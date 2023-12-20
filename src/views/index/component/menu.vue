@@ -39,7 +39,7 @@ const router = useRouter();
 const route = useRoute();
 
 const state = shallowReactive({
-  selectedItem: 'localMusic',
+  selectedItem: 'mv',
   onlineMenu: {
     title: '在线音乐',
     showFeedback: true,

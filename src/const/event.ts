@@ -21,5 +21,9 @@ export enum EventName {
   // 在线查询音乐
   SEARCH_SONGS = 'search_songs',
   // 获取音频播放地址
-  GET_SONG_INFO = 'get_song_info'
+  GET_SONG_INFO = 'get_song_info',
+  // 获取mv分类
+  GET_MV_CATEGORY = 'get_mv_category',
+  // 获取mv列表
+  GET_MV_LIST = 'get_mv_list'
 }

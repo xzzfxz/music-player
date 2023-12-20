@@ -103,6 +103,13 @@ pub mod outer_apis {
         }
     }
 
+    /**
+     * @description: 获取歌曲信息
+     * @param {String} hash 文件hash
+     * @param {String} album_id 专辑id
+     * @param {network} channel 渠道
+     * @return {*}
+     */
     #[tauri::command]
     pub async fn get_song_info(
         hash: String,
@@ -113,6 +120,50 @@ pub mod outer_apis {
             Ok(res) => res,
             Err(info) => {
                 println!("搜索提示请求错误: {:?}", info);
+                "".to_string()
+            }
+        }
+    }
+
+    /**
+     * @description: 获取mv分类
+     * @param {network} channel 渠道
+     * @return {*}
+     */
+    #[tauri::command]
+    pub async fn get_mv_category(channel: network::song_struct::ChannelType) -> String {
+        match network::get_mv_category(channel).await {
+            Ok(res) => res,
+            Err(info) => {
+                println!("搜索mv分类请求错误: {:?}", info);
+                "".to_string()
+            }
+        }
+    }
+
+    /**
+     * @description: 获取mv列表
+     * @param {u16} short mv分类short
+     * @param {u16} sort mv分类sort
+     * @param {u16} id mv分类id
+     * @param {u16} page 页数
+     * @param {u16} size 每页条数
+     * @param {ChannelType} channel 渠道
+     * @return {*}
+     */
+    #[tauri::command]
+    pub async fn get_mv_list(
+        short: u16,
+        sort: u16,
+        id: u16,
+        page: Option<u16>,
+        size: Option<u16>,
+        channel: network::song_struct::ChannelType,
+    ) -> String {
+        match network::get_mv_list(short, sort, id, page, size, channel).await {
+            Ok(res) => res,
+            Err(info) => {
+                println!("搜索mv列表请求错误: {:?}", info);
                 "".to_string()
             }
         }

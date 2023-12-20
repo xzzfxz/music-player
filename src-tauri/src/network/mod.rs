@@ -60,10 +60,54 @@ pub async fn search_songs(keyword: String, channel: ChannelType) -> Result<Strin
     Ok(res)
 }
 
+/**
+ * @description: 获取歌曲信息
+ * @param {String} hash 文件hash
+ * @param {String} album_id 专辑id
+ * @param {network} channel 渠道
+ * @return {*}
+ */
 pub async fn get_song_info(hash: String, album_id: String, channel: ChannelType) -> Result<String> {
-    println!("has: {}, albumId: {}", hash, album_id);
     let res = match channel {
         ChannelType::KuGou => kugou::get_song_info(hash, album_id).await?,
+        _ => "".to_string(),
+    };
+    Ok(res)
+}
+
+/**
+ * @description: 获取mv分类
+ * @param {ChannelType} channel 渠道
+ * @return {*}
+ */
+pub async fn get_mv_category(channel: ChannelType) -> Result<String> {
+    let res = match channel {
+        ChannelType::KuGou => kugou::get_mv_category().await?,
+        _ => "".to_string(),
+    };
+    Ok(res)
+}
+
+/**
+ * @description: 获取mv列表
+ * @param {u16} short mv分类short
+ * @param {u16} page 页数
+ * @param {u16} size 每页条数
+ * @param {ChannelType} channel 渠道
+ * @return {*}
+ */
+pub async fn get_mv_list(
+    short: u16,
+    sort: u16,
+    id: u16,
+    page: Option<u16>,
+    size: Option<u16>,
+    channel: ChannelType,
+) -> Result<String> {
+    let page = page.unwrap_or(1);
+    let size = size.unwrap_or(20);
+    let res = match channel {
+        ChannelType::KuGou => kugou::get_mv_list(short, sort, id, page, size).await?,
         _ => "".to_string(),
     };
     Ok(res)

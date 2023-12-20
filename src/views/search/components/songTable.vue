@@ -20,7 +20,7 @@
             </div>
             <div
               class="playing no-shrink flex-center"
-              v-if="curSong.id === row.id"
+              v-if="curSong.id === row.ID"
             >
               <i class="ri-rhythm-line"></i>
             </div>
@@ -94,7 +94,7 @@
 import { SongInfo } from '@/interface';
 import { PropType, computed } from 'vue';
 import useMainStore from '@/store';
-import { getFormatPlayTime, getUUID } from '@/utils';
+import { getFormatPlayTime } from '@/utils';
 import { invoke } from '@tauri-apps/api';
 import { EventName } from '@/const/event';
 import emitter from '@/utils/eventHub';
@@ -129,7 +129,7 @@ const handlePlay = async (currentInfo: any) => {
   }
   const json = JSON.parse(res)?.data;
   const songInfo: SongInfo = {
-    id: getUUID(),
+    id: currentInfo.ID,
     singer: json.author_name,
     name: json.song_name,
     path: json.play_url,
