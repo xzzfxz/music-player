@@ -9,6 +9,7 @@
     <div class="footer-container no-shrink">
       <FootBar />
     </div>
+    <MvDrawer />
   </div>
 </template>
 
@@ -18,6 +19,7 @@ import NavBar from '@/components/navBar/index.vue';
 import FootBar from '@/components/footBar/index.vue';
 import { onMounted, ref, nextTick, onBeforeUnmount } from 'vue';
 import emitter from '@/utils/eventHub';
+import MvDrawer from '@/views/mv/components/mvDrawer.vue';
 
 const reload = ref(true);
 
