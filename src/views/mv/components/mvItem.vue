@@ -4,6 +4,7 @@
       class="mv-item-container flex"
       v-for="item in props.list"
       :key="item.videoid"
+      @click="handleToPlayMv(item)"
     >
       <div class="mv-cover">
         <img class="image" :src="replaceImgSize(item.img)" />
@@ -32,6 +33,11 @@ const props = defineProps({
     default: () => []
   }
 });
+
+// 播放mv
+const handleToPlayMv = (current: any) => {
+  console.log(current);
+};
 </script>
 
 <style lang="scss" scoped>
