@@ -12,7 +12,9 @@
           <div class="back-icon click-active" @click="handleCloseDrawer">
             <i class="ri-arrow-left-s-line"></i>
           </div>
-          <div class="title" data-tauri-drag-region>周杰伦 - 青花瓷</div>
+          <div class="title" @click="handleCloseDrawer">
+            {{ state.current.singer }} - {{ state.current.name }}
+          </div>
         </div>
       </div>
     </template>
@@ -21,9 +23,9 @@
         <video
           ref="videoRef"
           class="video"
+          autoplay
           oncontextmenu="return false"
           data-tauri-drag-region
-          autoplay
           :src="state.src"
           @error="handlePlayError"
         ></video>
@@ -31,19 +33,23 @@
     </template>
     <template #footer>
       <div class="footer-container flex">
-        <div class="back-icon"></div>
-        <div class="title"></div>
+        <Controls />
       </div>
     </template>
   </el-drawer>
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { onBeforeUnmount, onMounted, reactive, nextTick } from 'vue';
+import Controls from './controls.vue';
+import emitter from '@/utils/eventHub';
+import { MvInfo } from '@/interface/event';
 
 const state = reactive({
   showDrawer: false,
-  src: 'http://fsmvpc.ali.kugou.com/202312251756/944f28bc30a86ea4b71aeaba831abac3/KGTX/CLTX002/b7f7fa5a2dd3861c8f3bcb16fbab0da0.mp4'
+  src: '',
+  mvList: [] as MvInfo[],
+  current: {} as MvInfo
 });
 
 // 播放错误
@@ -55,6 +61,36 @@ const handlePlayError = (e: any) => {
 const handleCloseDrawer = () => {
   state.showDrawer = false;
 };
+
+// 获取mv列表
+const handleGetMvList = (list: MvInfo[]) => {
+  state.mvList = list;
+  state.showDrawer = true;
+  nextTick(() => {
+    if (list.length) {
+      state.current = list[0];
+      state.src = state.current.url;
+    }
+  });
+};
+
+// 初始化事件
+const initEvent = () => {
+  emitter.on('mv.play', handleGetMvList);
+};
+
+// 取消监听事件
+const offEvent = () => {
+  emitter.off('mv.play', handleGetMvList);
+};
+
+onMounted(() => {
+  initEvent();
+});
+
+onBeforeUnmount(() => {
+  offEvent();
+});
 </script>
 
 <style lang="scss" scoped>

@@ -25,5 +25,7 @@ export enum EventName {
   // 获取mv分类
   GET_MV_CATEGORY = 'get_mv_category',
   // 获取mv列表
-  GET_MV_LIST = 'get_mv_list'
+  GET_MV_LIST = 'get_mv_list',
+  // 获取mv详情
+  GET_MV_DETAIL = 'get_mv_detail'
 }

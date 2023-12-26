@@ -168,4 +168,21 @@ pub mod outer_apis {
             }
         }
     }
+
+    /**
+     * @description:
+     * @param {String} hash mv hash
+     * @param {network} channel 渠道
+     * @return {*}
+     */
+    #[tauri::command]
+    pub async fn get_mv_detail(hash: String, channel: network::song_struct::ChannelType) -> String {
+        match network::get_mv_detail(hash, channel).await {
+            Ok(res) => res,
+            Err(info) => {
+                println!("搜索mv详情请求错误: {:?}", info);
+                "".to_string()
+            }
+        }
+    }
 }

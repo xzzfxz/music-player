@@ -79,3 +79,18 @@ pub async fn get_mv_list(short: u16, sort: u16, id: u16, page: u16, size: u16) -
         Ok("".to_string())
     }
 }
+
+pub async fn get_mv_detail(hash: String) -> Result<String> {
+    let url = format!(
+        "https://m.kugou.com/app/i/mv.php?cmd=100&hash={}&ismp3=1&ext=mp4",
+        hash
+    );
+    let client = reqwest::Client::new();
+    let res = client.get(url).send().await?;
+    if res.status().is_success() {
+        let body = res.text().await?;
+        Ok(body)
+    } else {
+        Ok("".to_string())
+    }
+}

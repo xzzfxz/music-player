@@ -1,3 +1,7 @@
+/**
+ * @description: 音频后缀
+ * @return {*}
+ */
 export const MUSIC_EXT = [
   'mp3',
   'wav',
@@ -12,3 +16,9 @@ export const MUSIC_EXT = [
   'mid',
   'midi'
 ];
+
+/**
+ * @description: mv品质(从高到低)
+ * @return {*}
+ */
+export const MV_QUALITY = ['rq', 'sq', 'le'];

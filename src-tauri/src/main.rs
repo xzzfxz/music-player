@@ -8,8 +8,8 @@ mod network;
 mod song;
 mod window;
 use crate::api::outer_apis::{
-    delete_local_song, get_local_song_list, get_mv_category, get_mv_list, get_song_info,
-    open_folder, open_song_dialog, search_songs, search_tips,
+    delete_local_song, get_local_song_list, get_mv_category, get_mv_detail, get_mv_list,
+    get_song_info, open_folder, open_song_dialog, search_songs, search_tips,
 };
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
@@ -25,7 +25,8 @@ fn main() {
             search_songs,
             get_song_info,
             get_mv_category,
-            get_mv_list
+            get_mv_list,
+            get_mv_detail
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

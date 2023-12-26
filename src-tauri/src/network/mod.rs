@@ -112,3 +112,17 @@ pub async fn get_mv_list(
     };
     Ok(res)
 }
+
+/**
+ * @description:
+ * @param {String} hash mv hash
+ * @param {network} channel 渠道
+ * @return {*}
+ */
+pub async fn get_mv_detail(hash: String, channel: ChannelType) -> Result<String> {
+    let res = match channel {
+        ChannelType::KuGou => kugou::get_mv_detail(hash).await?,
+        _ => "".to_string(),
+    };
+    Ok(res)
+}

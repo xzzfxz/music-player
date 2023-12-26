@@ -26,6 +26,13 @@
 <script setup lang="ts">
 import { PropType } from 'vue';
 import { replaceImgSize } from '@/utils';
+import { invoke } from '@tauri-apps/api';
+import { EventName } from '@/const/event';
+import { CHANNEL_TYPE } from '@/enum';
+import { MvInfo } from '@/interface/event';
+import { MV_QUALITY } from '@/const';
+import emitter from '@/utils/eventHub';
+import { ElMessage } from 'element-plus';
 
 const props = defineProps({
   list: {
@@ -36,7 +43,36 @@ const props = defineProps({
 
 // 播放mv
 const handleToPlayMv = (current: any) => {
-  console.log(current);
+  invoke(EventName.GET_MV_DETAIL, {
+    hash: current.mvhash,
+    channel: CHANNEL_TYPE.KU_GOU
+  }).then((res: any) => {
+    if (!res) {
+      return;
+    }
+    const json = JSON.parse(res);
+    const mvData = json.mvdata || {};
+    const mvList: MvInfo[] = [];
+    MV_QUALITY.forEach((item: string) => {
+      const mv = mvData[item] || {};
+      if (mv.downurl) {
+        mvList.push({
+          singer: json.singer,
+          name: json.songname,
+          type: item,
+          url: mv.downurl,
+          backUrl: mv.backupdownurl,
+          duration: mv.timelength,
+          bitRate: mv.bitrate
+        });
+      }
+    });
+    if (!mvList.length) {
+      ElMessage.error('暂未有相关信息');
+      return;
+    }
+    emitter.emit('mv.play', mvList);
+  });
 };
 </script>
 
