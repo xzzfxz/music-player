@@ -31,12 +31,22 @@ const handleReload = () => {
   });
 };
 
-onMounted(() => {
+// 初始化事件
+const initEvent = () => {
   emitter.on('router.reload', handleReload);
+};
+
+// 取消监听事件
+const offEvent = () => {
+  emitter.off('router.reload', handleReload);
+};
+
+onMounted(() => {
+  initEvent();
 });
 
 onBeforeUnmount(() => {
-  emitter.off('router.reload', handleReload);
+  offEvent();
 });
 </script>
 
