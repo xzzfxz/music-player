@@ -4,6 +4,7 @@
     direction="btt"
     class="video-drawer-container"
     size="100%"
+    :close-on-press-escape="false"
     :destroy-on-close="true"
     :show-close="false"
   >
@@ -66,6 +67,7 @@ import emitter from '@/utils/eventHub';
 import { MvInfo } from '@/interface/event';
 import { ElMessage } from 'element-plus';
 import useMainStore from '@/store';
+import { appWindow } from '@tauri-apps/api/window';
 
 const mainStore = useMainStore();
 
@@ -88,7 +90,7 @@ const state = reactive({
 const handleGetCurrentTime = () => {
   // 播放进度
   const time: number = videoRef.value?.currentTime || 0;
-  state.currentTime = Number(time.toFixed(0));
+  state.currentTime = Number(Math.floor(time));
   state.timeTimeOut = window.setTimeout(() => {
     handleGetCurrentTime();
   }, 1000);
@@ -101,7 +103,11 @@ const handleStopGetCurrentTime = () => {
 };
 
 // 关闭mv播放
-const handleCloseDrawer = () => {
+const handleCloseDrawer = async () => {
+  const isFull = await appWindow.isFullscreen();
+  if (isFull) {
+    await appWindow.setFullscreen(false);
+  }
   state.showDrawer = false;
   handleStopGetCurrentTime();
 };
@@ -121,7 +127,9 @@ const handleGetMvList = (list: MvInfo[]) => {
 };
 
 // 播放结束，播放有mv的下一首
-const handlePlayEnd = () => {};
+const handlePlayEnd = () => {
+  state.isPlaying = false;
+};
 
 // 缓冲进度变化
 const handleCacheProgress = () => {
@@ -171,6 +179,9 @@ const handleVideoUp = () => {
 const handleToPlayPause = (toPlay: boolean) => {
   if (state.isPress) {
     return;
+  }
+  if (state.currentTime >= Math.floor(state.current.duration)) {
+    videoRef.value.currentTime = 0;
   }
   if (toPlay) {
     videoRef.value?.play();

@@ -53,7 +53,7 @@
           />
         </el-popover>
       </div>
-      <div class="fullscreen click-active">
+      <div class="fullscreen click-active" @click="handleFullScreen">
         <i class="ri-fullscreen-fill"></i>
       </div>
     </div>
@@ -65,6 +65,7 @@ import { MvInfo } from '@/interface/event';
 import useMainStore from '@/store';
 import { PropType, computed, reactive, watch } from 'vue';
 import { getFormatPlayTime } from '@/utils';
+import { appWindow } from '@tauri-apps/api/window';
 
 const emit = defineEmits(['playPause', 'sliderChange', 'volumeChange']);
 
@@ -113,6 +114,12 @@ const handlePlayProgressChange = (val: number) => {
 // 缓存进度改变
 const handleCacheChange = (progress: number) => {
   state.cacheProgress = progress;
+};
+
+// 全屏
+const handleFullScreen = async () => {
+  const isFull = await appWindow.isFullscreen();
+  appWindow.setFullscreen(!isFull);
 };
 
 watch(

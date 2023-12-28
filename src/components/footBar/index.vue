@@ -200,8 +200,12 @@ watch(
   background-color: rgba(28, 126, 255, 0.8);
   backdrop-filter: blur(2px);
 }
+.foot-bar-left {
+  flex-grow: 1;
+}
 .foot-bar-right {
   padding-right: 20px;
+  flex-shrink: 0;
 }
 .control-container {
   width: $menuWidth;
@@ -231,7 +235,9 @@ watch(
   background-color: #458ceb;
 }
 .play-info-container {
-  width: 368px;
+  width: 0;
+  min-width: 368px;
+  flex-grow: 1;
   margin-left: 14px;
   padding-bottom: 8px;
   .music-info-container {
