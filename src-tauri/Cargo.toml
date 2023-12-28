@@ -1,6 +1,6 @@
 [package]
 name = "tauri-study"
-version = "0.0.0"
+version = "0.0.2"
 description = "A Tauri App"
 authors = ["you"]
 license = ""
@@ -33,3 +33,9 @@ encoding = "0.2.33"
 # this feature is used for production builds or when `devPath` points to the filesystem
 # DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+opt-level = "z"
+lto = true
+panic = "abort"
+strip = "symbols"

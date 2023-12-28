@@ -3212,7 +3212,7 @@ dependencies = [
 
 [[package]]
 name = "tauri-study"
-version = "0.0.0"
+version = "0.0.2"
 dependencies = [
  "anyhow",
  "claxon",
