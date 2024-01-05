@@ -15,17 +15,33 @@
           <Search />
         </div>
       </div>
+      <div class="right-content flex">
+        <div class="avatar" @click="handleShowLogin">
+          <i class="ri-user-line avatar-icon"></i>
+        </div>
+        <div class="user-text click-active" @click="handleShowLogin">登录</div>
+        <div class="setting-icon"><i class="ri-settings-2-line"></i></div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { createWindow } from '@/utils/window';
 import Search from './components/search.vue';
 import emitter from '@/utils/eventHub';
+import { WINDOW_NAME } from '@/enum';
 
 // 刷新
 const handleRefresh = () => {
   emitter.emit('router.reload');
+};
+
+// 显示登录
+const handleShowLogin = () => {
+  createWindow(WINDOW_NAME.LOGIN, {
+    url: '/login'
+  });
 };
 </script>
 
@@ -60,6 +76,32 @@ const handleRefresh = () => {
       border-radius: 12px;
       align-items: center;
       overflow: hidden;
+    }
+  }
+  .right-content {
+    padding-right: 20px;
+    align-items: center;
+    color: #efefef;
+    .avatar {
+      width: 26px;
+      height: 26px;
+      margin-right: 8px;
+      border-radius: 50%;
+      background-color: #bcdcff;
+      text-align: center;
+      cursor: pointer;
+      .avatar-icon {
+        font-size: 18px;
+      }
+    }
+    .user-text {
+      margin-right: 14px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .setting-icon {
+      font-size: 18px;
+      cursor: pointer;
     }
   }
 }

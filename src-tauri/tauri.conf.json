@@ -32,6 +32,7 @@
         ]
       }
     },
+    "macOSPrivateApi": true,
     "bundle": {
       "active": true,
       "targets": "all",

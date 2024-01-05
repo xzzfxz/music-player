@@ -20,3 +20,14 @@ export enum MENU_EVENT {
 export enum CHANNEL_TYPE {
   KU_GOU = 'KuGou'
 }
+
+/**
+ * @description: 窗口名称
+ * @return {*}
+ */
+export enum WINDOW_NAME {
+  // 主窗口
+  MAIN = 'main',
+  // 登录
+  LOGIN = 'login'
+}
