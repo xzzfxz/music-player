@@ -27,10 +27,8 @@
 </template>
 
 <script setup lang="ts">
-import { createWindow } from '@/utils/window';
 import Search from './components/search.vue';
 import emitter from '@/utils/eventHub';
-import { WINDOW_NAME } from '@/enum';
 
 // 刷新
 const handleRefresh = () => {
@@ -38,11 +36,7 @@ const handleRefresh = () => {
 };
 
 // 显示登录
-const handleShowLogin = () => {
-  createWindow(WINDOW_NAME.LOGIN, {
-    url: '/login'
-  });
-};
+const handleShowLogin = () => {};
 </script>
 
 <style lang="scss" scoped>
